@@ -3,7 +3,7 @@ from bcc import BPF
 from time import sleep
 import sys
 
-b = BPF(src_file = "function_analyzer.c",debug = 6)
+b = BPF(src_file = "function_analyzer.c")
 
 func_name = "sys_clone"
 if len(sys.argv)>1:   
@@ -43,6 +43,8 @@ for k, v in fun_data.items():
         print "no process exec"
         continue
     print (k, v)
+
+print ("average time %f us" %(float(fun_data["total_time"]/fun_data["count"])/1000.0)) 
 
 
 
