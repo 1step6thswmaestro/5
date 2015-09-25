@@ -13,4 +13,3 @@ while True:
     
     for k,v in b["stats"].items():
         print ("%d, %5u"% (k.pre_pid, v.value))
-    print ("ci")
