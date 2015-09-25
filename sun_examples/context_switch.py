@@ -12,5 +12,5 @@ while True:
     sleep(interval)
     
     for k,v in b["stats"].items():
-        print ("%5d, %u") %(k.pre_pid, v)
+        print ("%d, %5u"% (k.pre_pid, v.value))
     print ("ci")
