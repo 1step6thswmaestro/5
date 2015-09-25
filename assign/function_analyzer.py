@@ -26,17 +26,23 @@ fun_data = {
 
 
 for k,v in b["result"].items():
+    if v.count == 0:
+        continue
     fun_data["count"] += v.count
     fun_data["total_time"] += v.total_time
     if fun_data["min_time"] is None or fun_data["min_time"]> v.min_time:
         fun_data["min_time"] = v.min_time
 
+    print type(v.min_time)
     if fun_data["max_time"]< v.max_time:
         fun_data["max_time"] = v.max_time
 
 
 for k, v in fun_data.items():
     print (k, v)
+    print type(v)
+    if k == "min_time":
+        print ("%s, %u" %(k,v))
 
 
 
