@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 from bcc import BPF
 from ctypes import c_ushort, c_int, c_ulonglong
 from time import sleep
