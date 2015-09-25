@@ -39,10 +39,10 @@ for k,v in b["result"].items():
 
 
 for k, v in fun_data.items():
+    if v is None:
+        print "no process exec"
+        continue
     print (k, v)
-    print type(v)
-    if k == "min_time":
-        print ("%s, %u" %(k,v))
 
 
 
