@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from bcc import BPF
 from time import sleep
 
