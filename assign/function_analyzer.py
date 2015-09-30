@@ -44,8 +44,10 @@ for k, v in fun_data.items():
         continue
     print (k, v)
 
-print ("average time %f us" %(float(fun_data["total_time"]/fun_data["count"])/1000.0)) 
-
+if fun_data["count"] != 0:
+	print ("average time %f us" %(float(fun_data["total_time"]/fun_data["count"])/1000.0)) 
+else:
+	print ("Cannot calculate average time because of the count which is zero.")
 
 
 
