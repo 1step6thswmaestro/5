@@ -3,7 +3,7 @@ from bcc import BPF
 from time import sleep
 import sys
 
-b = BPF(src_file = "malloc_analyzer.c", debug=6)
+b = BPF(src_file = "simple.c", debug=6)
 
 FUNC_NAME = "__kmalloc"
 FLAG_NUM = 25

@@ -33,7 +33,7 @@ int malloc_call(struct pt_regs *ctx, size_t size, gfp_t flags)
         {
             if (shift_bit & flags)
                 leaf->flag[i]++;
-            shift_bit <= 1;
+            shift_bit <<= 1;
         }
        
         u64 *val = pid_size.lookup_or_init(&new_pid_size, &zero);
@@ -42,7 +42,7 @@ int malloc_call(struct pt_regs *ctx, size_t size, gfp_t flags)
     else
     {
         struct malloc_data new_total;
-        new_total.size = (int)size;
+        new_total.size = size;
 
         for(int i = 0 ; i < NUM_GFP_FLAG; ++i)
         {
@@ -54,8 +54,8 @@ int malloc_call(struct pt_regs *ctx, size_t size, gfp_t flags)
             shift_bit <<= 1;
         }
 
-        pid_total.lookup_or_init(&pid, &new_total);
-        pid_size.lookup_or_init(&new_pid_size, &zero);
+        pid_total.update(&pid, &new_total);
+        pid_size.update(&new_pid_size, &zero);
     }
 
     return 0;
