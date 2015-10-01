@@ -1,0 +1,76 @@
+clang -cc1 -triple x86_64-unknown-linux-gnu -emit-llvm-bc -emit-llvm-uselists -disable-free -disable-llvm-verifier -main-file-name simple.c -mrelocation-model static -mthread-model posix -mdisable-fp-elim -fmath-errno -masm-verbose -mconstructor-aliases -munwind-tables -fuse-init-array -target-cpu x86-64 -dwarf-column-info -coverage-file /home/drzix/linux/simple.c -nostdsysteminc -nobuiltininc -resource-dir ../lib/clang/3.8.0 -isystem /usr/lib/gcc/x86_64-linux-gnu/4.8/include -include ./include/linux/kconfig.h -include /usr/share/bcc/include/bcc/helpers.h -I /home/drzix/Event-Notifier/assign -I ./arch/x86/include -I arch/x86/include/generated/uapi -I arch/x86/include/generated -I include -I ./arch/x86/include/uapi -I arch/x86/include/generated/uapi -I ./include/uapi -I include/generated/uapi -D __KERNEL__ -I /usr/share/bcc/include -Wno-deprecated-declarations -Wno-unused-value -Wno-pointer-sign -fdebug-compilation-dir /home/drzix/linux -ferror-limit 19 -fmessage-length 0 -fobjc-runtime=gcc -fdiagnostics-show-option -o simple.bc -x c /home/drzix/Event-Notifier/assign/simple.c
+#include <uapi/linux/ptrace.h>
+#include <linux/gfp.h>
+
+#define NUM_GFP_FLAG 25
+
+struct malloc_data{
+	size_t size;
+	u64 flag[NUM_GFP_FLAG];
+};
+
+BPF_HASH(simple_map, u32, struct malloc_data);
+
+__attribute__((section(".bpf.fn.malloc_call")))
+int malloc_call(struct pt_regs *ctx, size_t size, gfp_t flags)
+{size = ctx->di;flags = ctx->si;
+	u32 pid = bpf_get_current_pid_tgid();
+	struct malloc_data* leaf = bpf_map_lookup_elem((void *)bpf_pseudo_fd(1, 3), &pid);
+	
+	if (leaf)
+	{
+		({ typeof(size_t) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf + offsetof(struct malloc_data, size)); _val; }) += size;
+		({ typeof(u64 [25]) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf->flag[fl + offsetof(struct malloc_data, s % )); _val; })NUM_GFP_FLAG]); _val; });
+	}
+	else
+	{
+		struct malloc_data new_data;
+		new_data.size = size;
+		for (int i = 0; i < NUM_GFP_FLAG; ++i)
+			new_data.flag[i] = 0;
+		({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)new_data.flag[flags % NUM_GFP_FLAG]); _val; });
+		bpf_map_update_elem((void *)bpf_pseudo_fd(1, 3), &pid, &new_data, BPF_ANY);
+	}
+
+	return 0;
+}
+<bcc-memory-buffer>:21:153: error: expression is not assignable
+                ({ typeof(size_t) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf + offsetof(struct malloc_data, size)); _val; }) += size;
+                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ^
+<bcc-memory-buffer>:22:243: error: expected ')'
+                ({ typeof(u64 [25]) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf->flag[fl + offsetof(struct malloc_data, s % )); _val; })NUM_GFP_FLAG]); _val; });
+                                                                                                                                                                                                                                                                ^
+<bcc-memory-buffer>:22:212: note: to match this '('
+                ({ typeof(u64 [25]) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf->flag[fl + offsetof(struct malloc_data, s % )); _val; })NUM_GFP_FLAG]); _val; });
+                                                                                                                                                                                                                                 ^
+include/linux/stddef.h:16:32: note: expanded from macro 'offsetof'
+#define offsetof(TYPE, MEMBER)  __compiler_offsetof(TYPE, MEMBER)
+                                ^
+include/linux/compiler-gcc.h:158:20: note: expanded from macro '__compiler_offsetof'
+        __builtin_offsetof(a, b)
+                          ^
+<bcc-memory-buffer>:22:207: error: use of undeclared identifier 'fl'
+                ({ typeof(u64 [25]) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf->flag[fl + offsetof(struct malloc_data, s % )); _val; })NUM_GFP_FLAG]); _val; });
+                                                                                                                                                                                                                            ^
+<bcc-memory-buffer>:22:246: error: expected ']'
+                ({ typeof(u64 [25]) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf->flag[fl + offsetof(struct malloc_data, s % )); _val; })NUM_GFP_FLAG]); _val; });
+                                                                                                                                                                                                                                                                   ^
+<bcc-memory-buffer>:22:206: note: to match this '['
+                ({ typeof(u64 [25]) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf->flag[fl + offsetof(struct malloc_data, s % )); _val; })NUM_GFP_FLAG]); _val; });
+                                                                                                                                                                                                                           ^
+<bcc-memory-buffer>:22:257: error: expected ')'
+                ({ typeof(u64 [25]) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf->flag[fl + offsetof(struct malloc_data, s % )); _val; })NUM_GFP_FLAG]); _val; });
+                                                                                                                                                                                                                                                                              ^
+<bcc-memory-buffer>:4:22: note: expanded from macro 'NUM_GFP_FLAG'
+#define NUM_GFP_FLAG 25
+                     ^
+<bcc-memory-buffer>:22:75: note: to match this '('
+                ({ typeof(u64 [25]) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)({ typeof(u64) _val; memset(&_val, 0, sizeof(_val)); bpf_probe_read(&_val, sizeof(_val), (u64)leaf->flag[fl + offsetof(struct malloc_data, s % )); _val; })NUM_GFP_FLAG]); _val; });
+                                                                                        ^
+5 errors generated.
+Traceback (most recent call last):
+  File "simple.py", line 6, in <module>
+    b = BPF(src_file = "simple.c", debug=6)
+  File "/usr/lib/python2.7/dist-packages/bcc/__init__.py", line 388, in __init__
+    raise Exception("Failed to compile BPF module %s" % src_file)
+Exception: Failed to compile BPF module simple.c
