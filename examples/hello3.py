@@ -30,6 +30,7 @@ b = BPF(src_file = "hello3.c")
 # header
 print("Tracing... Hit Ctrl-C to end.")
 
+
 # output
 loop = 0
 do_exit = 0
@@ -43,8 +44,9 @@ while (1):
 	except KeyboardInterrupt:
 		pass; do_exit = 1
 
-	print
-	b["dist"].print_log2_hist("usecs")
 	b["dist"].clear()
 	if do_exit:
+                b.trace_print()
 		exit()
+
+
