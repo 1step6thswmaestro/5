@@ -31,6 +31,8 @@ int malloc_call(struct pt_regs *ctx, size_t size, gfp_t flags)
         index = 2;
         value =flag.lookup_or_init(&index, &zero);
         (*value)++;
+        if ((*value)>100)
+            return 1;
     }
     else if((flags & GFP_ATOMIC)== GFP_ATOMIC){
         index = 3;
