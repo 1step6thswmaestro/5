@@ -45,5 +45,5 @@ int malloc_call(struct pt_regs *ctx, size_t size, gfp_t flags)
         (*value)++;
     }
 
-return 0;
+return 1; 
 }
