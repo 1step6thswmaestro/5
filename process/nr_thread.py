@@ -18,7 +18,9 @@ do_exit = 0
 
 while 1:
     for k,v in b["dist"].items():
-        print (k.value, v.value)
+        print (k)
+        print (v.nr_curr, v.max, v.min)
+
     
     try:
         sleep(interval)
