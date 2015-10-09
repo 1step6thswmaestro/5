@@ -20,9 +20,17 @@ int kmal(struct pt_regs *ctx, size_t size){
     return 0;
 }
 /*
-int kfree(struct pt_regs *ctx, const void *objp){
-
-
-
+ * how to find objp's size?
+ * need to check this logic
+ *
+int kfre(struct pt_regs *ctx, void *objp){
+    struct memory_info * leaf;
+    struct memory_info init;
+    init.allocate_size = 0;
+    init.free_size = 0;
+    u32 pid = bpf_get_current_pid_tgid();
+    leaf = info.lookup_or_init(&pid, &init);
+    leaf -> free_size += sizeof(*objp);
+    return 0;
 }
 */
