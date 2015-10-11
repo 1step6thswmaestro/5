@@ -16,8 +16,11 @@ int kmal(struct pt_regs *ctx, size_t size){
     u32 pid =bpf_get_current_pid_tgid();
     leaf = info.lookup_or_init(&pid, &init);
     leaf -> total_allocate_size += size;
+    // max size = 4096 so this code don't need.. 
     if(size > leaf->max_allocate_size)
         leaf->max_allocate_size = size;
+
+
     return 0;
 }
 /*
