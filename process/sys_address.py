@@ -1,4 +1,5 @@
 import platform
+import sys
 
 #use get_variable_address, we can get Kerenl global variable, and functions's address
 class sys_address():
@@ -36,5 +37,7 @@ def get_variable_address(va_name):
 
 if __name__ == "__main__":
     a = sys_address()
-    print a.get_variable_address("nr_threads")
-    print get_variable_address("nr_threads")
+    if len(sys.argv)>1:
+        print a.get_variable_address(sys.argv[1])
+    else:
+        print get_variable_address("nr_threads")
