@@ -11,7 +11,10 @@ while 1:
 
     try:
         for k, v in b["info"].items():
-            print "pid %5s, minor : %8d, major : %8d"%(k.value, v.min_flt, v.maj_flt)
+            if v.maj_flt !=0:
+                print "pid %5s, minor : %8d, major : %8d"%(k.value, v.min_flt, v.maj_flt)
+            else:
+                pass
 
     except KeyboardInterrupt:
         do_exit = 1

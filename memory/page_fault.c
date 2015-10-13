@@ -1,5 +1,5 @@
 #include <uapi/linux/ptrace.h>
-#include <linux/slab.h>
+#include <linux/sched.h>
 
 struct task_page_info{
     unsigned long min_flt;
