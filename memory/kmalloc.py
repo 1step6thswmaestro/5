@@ -4,7 +4,7 @@ from time import sleep
 b = BPF(src_file = "kmalloc.c")
 
 b.attach_kprobe(event = "__kmalloc", fn_name = "kmal")
-#b.attach_kprobe(event = "__kfree", fn_name = "kfre")
+b.attach_kprobe(event = "kfree", fn_name = "kfre")
 
 
 
@@ -14,7 +14,7 @@ while 1:
 
     try:
         for k, v in b["info"].items():
-            print "pid : %s, total allocate size %d, max allocate_size %d, free_size %d " %(k.value,v.total_allocate_size,v.max_allocate_size,  v.free_size)
+            print "pid : %5s, total alloc size %8d, max allo_size %8d, free_count %5d " %(k.value,v.total_allocate_size,v.max_allocate_size,  v.free_count)
     except KeyboardInterrupt:
         do_exit = 1
     
