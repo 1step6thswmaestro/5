@@ -1,6 +1,31 @@
 from bcc import BPF
 import time
 import sys
+import argparse
+
+#default
+event_num = 5 
+interval = 5
+event = 0
+
+parser = argparse.ArgumentParser(description = "parsing arguemnt")
+parser.add_argument("-n", type=int, help="the number of events for notify")
+parser.add_argument("-t", type=int, help="timeout second")
+parser.add_argument("-e", help = "kind of event that you want notify")
+args = parser.parse_args()
+
+if args.n:
+    event_num = args.n
+    print event_num
+
+if args.t:
+    interval = args.t
+    print interval
+
+if args.e:
+    event = args.e
+    print event
+
 
 
 def call_back (pid, call_chain):
@@ -11,16 +36,6 @@ if len(sys.argv) == 1:
     exit()
 
 FUNC_NAME = ["sys_clone", "finish_task_switch"]
-
-#default
-event_num = 5 
-interval = 5
-event = 0
-if "-n" in sys.argv:
-    event_num = int(sys.argv[sys.argv.index("-n")+1])
-
-if "-t" in sys.argv:
-    interval = int(sys.argv[sys.argv.index("-t")+1])
 
 with open("sys_fork.c", 'r') as f:
     cfile = f.read()
