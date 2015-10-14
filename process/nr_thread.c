@@ -1,31 +1,29 @@
 #include <uapi/linux/ptrace.h>
 #include <linux/sched.h>
 
-struct thread_count{
-    int nr_curr;
-    int max;
-    int min;
-};
-
-BPF_TABLE("array", int, struct thread_count, dist, 1);
+BPF_TABLE("array", int, int, dist, 4);
 
 int read_nr_thread(struct pt_regs *ctx, unsigned long flags){
 
     int n  = 0;
     bpf_probe_read(&n, sizeof(int), (void*) ADRVAR );
     int index = 0;
-    struct thread_count * count_info;
-    struct thread_count  init_info = {0, 0, -1};
+    int *nr_curr;
+    int *max;
+    int *min;
+    int zero = 0;
 
-    count_info = dist.lookup_or_init(&index, &init_info);
-    count_info -> nr_curr = n;
-
-
-    if (n > count_info->max){
-        count_info->max = n;
+    nr_curr = dist.lookup_or_init(&index, &zero);
+    (*nr_curr) = n;
+    index = 2;
+    max = dist.lookup_or_init(&index, &zero);
+    index = 3;
+    min = dist.lookup_or_init(&index, &zero);
+    if (n > (*max)){
+        (*max) = n;
     }
-    else if( n <count_info->min || count_info->min== -1){
-        count_info->min = n;
+    else if( n <(*min) || (*min)== 0){
+        (*min) = n;
     }
     
     return 0;
