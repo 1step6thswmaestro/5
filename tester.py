@@ -40,7 +40,8 @@ EVENT_LIST = {
         "task.exit" : ["task/task_exit.c", "do_exit", "task_exit_begin", "task_exit"],
         "task.switch" : ["task/task_switch.c", "finish_task_switch", "task_switch_begin", "task_switch"],
         "memory.alloc" : ["memory/memory_alloc.c", "__kmalloc", "memory_alloc_begin", "memory_alloc"],
-        "memory.free" : ["memory/memory_free.c", "kfree", "memory_free_begin", "memory_free"]
+        "memory.free" : ["memory/memory_free.c", "kfree", "memory_free_begin", "memory_free"],
+        "memory.alloc_page" : ["memory/memory_alloc_page.c", "__alloc_pages_nodemask", "memory_alloc_page_begin", "memory_alloc_page"]
         }
 
 with open(EVENT_LIST[event][0], 'r') as f:

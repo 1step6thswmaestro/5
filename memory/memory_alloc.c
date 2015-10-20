@@ -1,5 +1,4 @@
 /*
- * Author : Dr.Zix
  * Event : memory.alloc
  * Data to crawl : total count, total size
  * Used Kernel-function : __kmalloc
@@ -16,7 +15,7 @@ struct memory_alloc_value
     u64 size;
 };
 
-    // map where we save total count
+    // map where we save total count and size
 BPF_TABLE("array", int, struct memory_alloc_value, memory_alloc_map, NUM_ARRAY_MAP_SIZE);
 
     // add memory_alloc_value.count one
@@ -25,7 +24,8 @@ BPF_TABLE("array", int, struct memory_alloc_value, memory_alloc_map, NUM_ARRAY_M
 int memory_alloc_begin(struct pt_regs *ctx, size_t size)
 {
     struct memory_alloc_value *val, val_temp;
-    int count, map_index = NUM_MAP_INDEX;
+    int map_index = NUM_MAP_INDEX;
+    u64 cnt, siz;
     val_temp.count = 0;
     val_temp.size = (u64)size;
     
@@ -33,8 +33,8 @@ int memory_alloc_begin(struct pt_regs *ctx, size_t size)
     ++(val->count);
     val->size += (u64)size;
     
-    count = val->count;
-    size = val->size;
+    cnt = val->count;
+    siz = val->size;
     if (EXPRESSION)
         return 1;
 

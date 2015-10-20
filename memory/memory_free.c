@@ -1,5 +1,4 @@
 /*
- * Author : Dr.Zix
  * Event : memory.free
  * Data to crawl : total count, total size
  * Used Kernel-function : kfree
@@ -22,13 +21,14 @@ BPF_TABLE("array", int, struct memory_free_value, memory_free_map, NUM_ARRAY_MAP
 int memory_free_begin(struct pt_regs *ctx)
 {
     struct memory_free_value *val, val_temp;
-    int count, map_index = NUM_MAP_INDEX;
+    int map_index = NUM_MAP_INDEX;
+    u64 cnt;
     val_temp.count = 0;
     
     val = memory_free_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);
     
-    count = val->count;
+    cnt = val->count;
     if (EXPRESSION)
         return 1;
 

@@ -1,5 +1,4 @@
 /*
- * Author : Dr.Zix
  * Event : task.switch
  * Data to crawl : total count
  * Used Kernel-function : finish_task_switch
@@ -22,13 +21,14 @@ BPF_TABLE("array", int, struct task_switch_value, task_switch_map, NUM_ARRAY_MAP
 int task_switch_begin(struct pt_regs *ctx)
 {
     struct task_switch_value *val, val_temp;
-    int count, map_index = NUM_MAP_INDEX;
+    int map_index = NUM_MAP_INDEX;
+    u64 cnt;
     val_temp.count = 0;
     
     val = task_switch_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);
 
-    count = val->count;
+    cnt = val->count;
     if (EXPRESSION)
         return 1;
 
