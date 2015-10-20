@@ -23,7 +23,7 @@ def print_map():
     map_name = EVENT_LIST[event][3] + "_map"
     for k,v in b[map_name].items():
         print ("total count : %u" % (v.count))
-        print ("total size : %u" % (v.size))
+        #print ("total size : %u" % (v.size))
     exit()
 
 
@@ -38,6 +38,7 @@ if len(sys.argv) == 1:
 EVENT_LIST = {
         "task.create" : ["task/task_create.c", "_do_fork", "task_create_begin", "task_create"],
         "task.exit" : ["task/task_exit.c", "do_exit", "task_exit_begin", "task_exit"],
+        "task.switch" : ["task/task_switch.c", "finish_task_switch", "task_switch_begin", "task_switch"],
         "memory.alloc" : ["memory/memory_alloc.c", "__kmalloc", "memory_alloc_begin", "memory_alloc"],
         "memory.free" : ["memory/memory_free.c", "kfree", "memory_free_begin", "memory_free"]
         }
