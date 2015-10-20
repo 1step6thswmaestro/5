@@ -18,7 +18,7 @@ struct task_create_value
     // map where we save total count
 BPF_TABLE("array", int, struct task_create_value, task_create_map, NUM_ARRAY_MAP_SIZE);
 
-    // add task_exit_value.count one when _do_fork is called
+    // add task_create_value.count one when _do_fork is called
 int task_create_begin(struct pt_regs *ctx)
 {
     struct task_create_value *val, val_temp;

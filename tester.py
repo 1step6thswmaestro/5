@@ -3,7 +3,7 @@ import time
 import sys
 import argparse
 
-parser = argparse.ArgumentParser(description = "Notifier usage")
+parser = argparse.ArgumentParser(description = "Notifier usage\nex) sudo python tester.py --event task.create --condition \"count > 1\" --time 10")
 parser.add_argument("--event", type=str, default=None, help = "the kind of event that you want notify")
 parser.add_argument("--condition", type=str, default=None, help = "the condition expression you want to notify that moment")
 parser.add_argument("--time", type=int, default=5, help = "timeout second")
@@ -21,6 +21,7 @@ if args.time:
 
 def call_back (pid, call_chain):
     print "The event happens"
+    exit()
 
 if len(sys.argv) == 1:
     print " "
@@ -28,7 +29,8 @@ if len(sys.argv) == 1:
 
 EVENT_LIST = {
         "task.create" : ["task/task_create.c", "_do_fork", "task_create_begin", "task_create"],
-        "task.exit" : ["task/task_exit.c", "do_exit", "task_exit_begin", "task_exit"]
+        "task.exit" : ["task/task_exit.c", "do_exit", "task_exit_begin", "task_exit"],
+        "memory.alloc" : ["memory/memory_alloc.c", "__kmalloc", "memory_alloc_begin", "memory_alloc"]
         }
 
 with open(EVENT_LIST[event][0], 'r') as f:
@@ -45,6 +47,7 @@ b.kprobe_poll(timeout = interval)
 
 map_name = EVENT_LIST[event][3] + "_map"
 for k,v in b[map_name].items():
-    print ("%u" % (v.count))
+    print ("total count : %u" % (v.count))
+    print ("total size : %u" % (v.size))
 
 exit()
