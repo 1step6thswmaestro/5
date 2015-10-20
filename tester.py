@@ -19,9 +19,17 @@ if args.time:
     interval = args.time
     print ("timeout: %u" % (interval))
 
+def print_map():
+    map_name = EVENT_LIST[event][3] + "_map"
+    for k,v in b[map_name].items():
+        print ("total count : %u" % (v.count))
+        print ("total size : %u" % (v.size))
+    exit()
+
+
 def call_back (pid, call_chain):
     print "The event happens"
-    exit()
+    print_map()
 
 if len(sys.argv) == 1:
     print " "
@@ -30,7 +38,8 @@ if len(sys.argv) == 1:
 EVENT_LIST = {
         "task.create" : ["task/task_create.c", "_do_fork", "task_create_begin", "task_create"],
         "task.exit" : ["task/task_exit.c", "do_exit", "task_exit_begin", "task_exit"],
-        "memory.alloc" : ["memory/memory_alloc.c", "__kmalloc", "memory_alloc_begin", "memory_alloc"]
+        "memory.alloc" : ["memory/memory_alloc.c", "__kmalloc", "memory_alloc_begin", "memory_alloc"],
+        "memory.free" : ["memory/memory_free.c", "kfree", "memory_free_begin", "memory_free"]
         }
 
 with open(EVENT_LIST[event][0], 'r') as f:
@@ -45,9 +54,6 @@ b.attach_kprobe(event = EVENT_LIST[event][1], fn_name = EVENT_LIST[event][2])
 interval = interval * 1000
 b.kprobe_poll(timeout = interval)
 
-map_name = EVENT_LIST[event][3] + "_map"
-for k,v in b[map_name].items():
-    print ("total count : %u" % (v.count))
-    print ("total size : %u" % (v.size))
+print_map()
 
 exit()

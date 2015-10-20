@@ -19,7 +19,9 @@ struct memory_alloc_value
     // map where we save total count
 BPF_TABLE("array", int, struct memory_alloc_value, memory_alloc_map, NUM_ARRAY_MAP_SIZE);
 
-    // add memory_alloc_value.count one when __kmalloc is called
+    // add memory_alloc_value.count one
+    // add memory_alloc_value.size allocated size
+    // when __kmalloc is called
 int memory_alloc_begin(struct pt_regs *ctx, size_t size)
 {
     struct memory_alloc_value *val, val_temp;
