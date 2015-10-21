@@ -27,7 +27,7 @@ int memory_alloc_page_begin(struct pt_regs *ctx, unsigned int order)
     int map_index = NUM_MAP_INDEX;
     u64 cnt, siz;
     val_temp.count = 0;
-    val_temp.size = (u64)order;
+    val_temp.size = 0;
     
     val = memory_alloc_page_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);

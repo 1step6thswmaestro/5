@@ -27,7 +27,7 @@ int memory_alloc_begin(struct pt_regs *ctx, size_t size)
     int map_index = NUM_MAP_INDEX;
     u64 cnt, siz;
     val_temp.count = 0;
-    val_temp.size = (u64)size;
+    val_temp.size = 0;
     
     val = memory_alloc_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);
