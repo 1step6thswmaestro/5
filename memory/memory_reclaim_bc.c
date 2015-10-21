@@ -1,15 +1,15 @@
 /*
- * Event : memory.alloc
+ * Event : memory.reclaim
  * Data to crawl : total count, total size
- * Used Kernel-function : __kmalloc
+ * Used Kernel-function : balance_pgdat
  */
 
-#include <uapi/linum/ptrace.h>
-
+#include <uapi/linux/ptrace.h>
+#include <linux/mmzone.h>
 #define NUM_ARRAY_MAP_SIZE 1
 #define NUM_MAP_INDEX 0
 #define NUM_TWO 2 //for calculating the num of pages
-#define PAGE_SIZE 4 //KiB 
+#define NUM_PAGE_SIZE 4 //KiB 
 
 struct memory_reclaim_value
 {
@@ -17,9 +17,9 @@ struct memory_reclaim_value
     u64 size;
 };
 
-BPF_TABLE("array" int, struct memory_reclaim_value, memory_reclaim_map, NUM_ARRAY_MAP_SIZE); 
+BPF_TABLE("array", int, struct memory_reclaim_value, memory_reclaim_map, NUM_ARRAY_MAP_SIZE); 
 
-int memroy_reclaim_begin(struct pt_regs *ctx, pg_dat_t *pgdat, int order)
+int memory_reclaim_begin(struct pt_regs *ctx, pg_data_t *pgdat, int order)
 {
     struct memory_reclaim_value *val, val_temp;
     int map_index = NUM_MAP_INDEX;
@@ -29,9 +29,9 @@ int memroy_reclaim_begin(struct pt_regs *ctx, pg_dat_t *pgdat, int order)
 
     val = memory_reclaim_map.lookup_or_init(&map_index, &val_temp);
     (val->count)++;
-    val->size += (NUM_TWO<<order)*PAGE_SIZE;
+    val->size += (NUM_TWO<<order) * NUM_PAGE_SIZE;
 
-    count = val->count;
+    cnt = val->count;
     siz = val->size;
     if (EXPRESSION)
         return 1;

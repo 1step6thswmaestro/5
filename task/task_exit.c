@@ -27,6 +27,8 @@ int task_exit_begin(struct pt_regs *ctx)
     
     val = task_exit_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);
+    
+    bpf_trace_printk("cpu: %d, cnt: %d\n", bpf_get_smp_processor_id(), val->count);
 
     cnt = val->count;
     if (EXPRESSION)
