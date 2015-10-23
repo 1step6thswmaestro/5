@@ -48,6 +48,7 @@ if len(sys.argv) == 1:
 
 EVENT_LIST = {
         "task.create" : ["task/task_create.c", "_do_fork", "task_create_begin", "task_create"],
+        "task.exec" : ["task/task_exec.c", "do_execveat_common.isra.34", "task_exec_begin", "task_exec"],
         "task.exit" : ["task/task_exit.c", "do_exit", "task_exit_begin", "task_exit"],
         "task.switch" : ["task/task_switch.c", "finish_task_switch", "task_switch_begin", "task_switch"],
         "memory.alloc" : ["memory/memory_alloc.c", "__kmalloc", "memory_alloc_begin", "memory_alloc"],
