@@ -57,7 +57,8 @@ EVENT_LIST = {
         "memory.free_page" : ["memory/memory_free_page.c", "__free_pages_ok", "memory_free_page_begin", "memory_free_page", "free_hot_cold_page", "memory_free_page_order_zero_begin"],
         "memory.reclaim" : ["memory/memory_reclaim_bc.c", "balance_pgdat", "memory_reclaim_begin", "memory_reclaim"],
         "fs.pagecache_access" : ["fs/fs_pagecache_access.c", "pagecache_get_page", "fs_pagecache_access_begin", "fs_pagecache_access"],
-        "fs.pagecache_miss" : ["fs/fs_pagecache_miss.c", "page_cache_sync_readahead", "fs_pagecache_miss_begin", "fs_pagecache_miss"]
+        "fs.pagecache_miss" : ["fs/fs_pagecache_miss.c", "page_cache_sync_readahead", "fs_pagecache_miss_begin", "fs_pagecache_miss"],
+        "fs.read_ahead" : ["fs/fs_read_ahead.c", "__do_page_cache_readahead", "fs_read_ahead_begin", "fs_read_ahead"]
         }
 
 with open(EVENT_LIST[event][0], 'r') as f:
@@ -67,7 +68,7 @@ rep = "EXPRESSION"
 bpf_code = cfile.replace(rep, expr)
 
 b = BPF(text = bpf_code, cb = call_back, debug=0)
-for i in range(9, -1, -1):
+for i in range(0, 3, -1):
     b.attach_kprobe(event = EVENT_LIST[event][1], fn_name = EVENT_LIST[event][2], cpu=i)
 if event == "memory.free_page":
     b.attach_kprobe(event = EVENT_LIST[event][4], fn_name = EVENT_LIST[event][5])
