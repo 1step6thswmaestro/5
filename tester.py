@@ -2,11 +2,13 @@ from bcc import BPF
 import time
 import sys
 import argparse
+import os
 
-parser = argparse.ArgumentParser(description = "Notifier usage\nex) sudo python tester.py --event task.create --condition \"count > 1\" --time 10")
+parser = argparse.ArgumentParser(description = "Notifier usage\nex) sudo python tester.py --event task.create --condition \"count > 1\" --time 10 --script \"bash script.sh\"")
 parser.add_argument("--event", type=str, default=None, help = "the kind of event that you want notify")
 parser.add_argument("--condition", type=str, default=None, help = "the condition expression you want to notify that moment")
 parser.add_argument("--time", type=int, default=5, help = "timeout second")
+parser.add_argument("--script", type=str, default=None, help = "the script to be executed after event happens")
 args = parser.parse_args()
 
 if args.event:
@@ -18,6 +20,9 @@ if args.condition:
 if args.time:
     interval = args.time
     print ("timeout: %u" % (interval))
+if args.script:
+    shscript = args.script
+    print ("script: %s" % (shscript))
 
 def print_map():
     map_name = EVENT_LIST[event][3] + "_map"
@@ -34,7 +39,7 @@ def call_back (pid, call_chain):
     global flag
     if flag is False:
         flag = True
-        print "The event happened"
+        os.system(shscript)
     #for idx in call_chain:
     #    print(b.ksym(idx))
 
@@ -58,7 +63,9 @@ EVENT_LIST = {
         "memory.reclaim" : ["memory/memory_reclaim_bc.c", "balance_pgdat", "memory_reclaim_begin", "memory_reclaim"],
         "fs.pagecache_access" : ["fs/fs_pagecache_access.c", "pagecache_get_page", "fs_pagecache_access_begin", "fs_pagecache_access"],
         "fs.pagecache_miss" : ["fs/fs_pagecache_miss.c", "page_cache_sync_readahead", "fs_pagecache_miss_begin", "fs_pagecache_miss"],
-        "fs.read_ahead" : ["fs/fs_read_ahead.c", "__do_page_cache_readahead", "fs_read_ahead_begin", "fs_read_ahead"]
+        "fs.read_ahead" : ["fs/fs_read_ahead.c", "__do_page_cache_readahead", "fs_read_ahead_begin", "fs_read_ahead"],
+        "network.send" : ["network/network_send.c", "tcp_v4_send_check", "network_send_begin", "network_send"],
+        "network.recv" : ["network/network_recv.c", "tcp_v4_syn_recv_sock", "network_recv_begin", "network_recv"]
         }
 
 with open(EVENT_LIST[event][0], 'r') as f:
@@ -68,10 +75,10 @@ rep = "EXPRESSION"
 bpf_code = cfile.replace(rep, expr)
 
 b = BPF(text = bpf_code, cb = call_back, debug=0)
-for i in range(0, 3, -1):
+for i in range(0, 10):
     b.attach_kprobe(event = EVENT_LIST[event][1], fn_name = EVENT_LIST[event][2], cpu=i)
-if event == "memory.free_page":
-    b.attach_kprobe(event = EVENT_LIST[event][4], fn_name = EVENT_LIST[event][5])
+    if event == "memory.free_page":
+        b.attach_kprobe(event = EVENT_LIST[event][4], fn_name = EVENT_LIST[event][5], cpu=i)
 
 interval = interval * 1000
 #for idx in range(0,10):
