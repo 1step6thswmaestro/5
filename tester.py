@@ -64,8 +64,8 @@ EVENT_LIST = {
         "fs.pagecache_access" : ["fs/fs_pagecache_access.c", "pagecache_get_page", "fs_pagecache_access_begin", "fs_pagecache_access"],
         "fs.pagecache_miss" : ["fs/fs_pagecache_miss.c", "page_cache_sync_readahead", "fs_pagecache_miss_begin", "fs_pagecache_miss"],
         "fs.read_ahead" : ["fs/fs_read_ahead.c", "__do_page_cache_readahead", "fs_read_ahead_begin", "fs_read_ahead"],
-        "network.send" : ["network/network_send.c", "tcp_v4_send_check", "network_send_begin", "network_send"],
-        "network.recv" : ["network/network_recv.c", "tcp_v4_syn_recv_sock", "network_recv_begin", "network_recv"]
+        "network.send" : ["network/network_send.c", "tcp_sendmsg", "network_send_begin", "network_send"],
+        "network.recv" : ["network/network_recv.c", "tcp_recvmsg", "network_recv_begin", "network_recv"]
         }
 
 with open(EVENT_LIST[event][0], 'r') as f:
