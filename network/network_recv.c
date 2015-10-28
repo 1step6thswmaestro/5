@@ -5,6 +5,7 @@
  */
 
 #include <uapi/linux/ptrace.h>
+#include <net/tcp.h>
 
 #define NUM_ARRAY_MAP_SIZE 1
 #define NUM_MAP_INDEX 0
@@ -21,7 +22,7 @@ BPF_TABLE("array", int, struct network_recv_value, network_recv_map, NUM_ARRAY_M
     // add network_recv_value.count one
     // add network_recv_value.size recv packet's data size
     // when tcp_recvmsg is called
-int network_recv_begin(struct pt_regs *ctx, size_t len)
+int network_recv_begin(struct pt_regs *ctx, struct sock *sk, struct msghdr *msg, size_t len)
 {
     struct network_recv_value *val, val_temp;
     int map_index = NUM_MAP_INDEX;
