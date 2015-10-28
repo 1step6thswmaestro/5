@@ -16,10 +16,9 @@ struct fs_read_ahead_value
     u64 size;
 };
 
-
 BPF_TABLE("array", int, struct fs_read_ahead_value, fs_read_ahead_map, NUM_ARRAY_MAP_SIZE);
 
-int fs_read_ahead_begin(struct pt_regs *ctx, struct address_space *mapping, struct file *filp, pgoff_t offset, unsigned long nr_to_read, unsigned long lookahaed_size)
+int fs_read_ahead_begin(struct pt_regs *ctx, struct address_space *mapping, struct file *filp, pgoff_t offset, unsigned long nr_to_read, unsigned long lookahead_size)
 {
     struct fs_read_ahead_value *val, val_temp;
     int map_index = NUM_MAP_INDEX;
@@ -29,7 +28,7 @@ int fs_read_ahead_begin(struct pt_regs *ctx, struct address_space *mapping, stru
 
     val = fs_read_ahead_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);
-    val->size += lookahaed_size;
+    val->size += lookahead_size;
 
     cnt = val->count;
     siz = val->size;
