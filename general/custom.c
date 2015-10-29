@@ -1,5 +1,5 @@
 /*
- * Event : custom.*
+ * Event : custom
  * Data to crawl : total count
  * Used Kernel-function : Everything in /proc/kallsyms
  */
