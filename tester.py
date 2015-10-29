@@ -25,6 +25,7 @@ if args.script:
     print ("script: %s" % (shscript))
 
 def print_map():
+    print ("-------------------")
     map_name = EVENT_LIST[event][3] + "_map"
     for k,v in b[map_name].items():
         print ("total count : %u" % (v.count))
@@ -32,20 +33,17 @@ def print_map():
             print ("total size : %u" % (v.size))
         except:
             pass
-#    exit()
 
 flag = False
 def call_back (pid, call_chain):
     global flag
     if flag is False:
         flag = True
+        print ("-------------------")
         os.system(shscript)
     #for idx in call_chain:
     #    print(b.ksym(idx))
-
     #b.trace_print()
-        print ("-------------------")
- #   print_map()
 
 if len(sys.argv) == 1:
     print " "
@@ -66,8 +64,8 @@ EVENT_LIST = {
         "fs.read_ahead" : ["fs/fs_read_ahead.c", "__do_page_cache_readahead", "fs_read_ahead_begin", "fs_read_ahead"],
         "fs.page_writeback_bg" : ["fs/fs_page_writeback_bg.c", "wb_start_background_writeback", "fs_page_writeback_bg_begin", "fs_page_writeback_bg"],
         "fs.page_writeback_per_inode" : ["fs/fs_page_writeback_per_inode.c", "__writeback_single_inode", "fs_page_writeback_per_inode_begin", "fs_page_writeback_per_inode"],
-        "network.send" : ["network/network_send.c", "tcp_sendmsg", "network_send_begin", "network_send"],
-        "network.recv" : ["network/network_recv.c", "tcp_recvmsg", "network_recv_begin", "network_recv"]
+        "network.tcp_send" : ["network/network_tcp_send.c", "tcp_sendmsg", "network_tcp_send_begin", "network_tcp_send"],
+        "network.tcp_recv" : ["network/network_tcp_recv.c", "tcp_recvmsg", "network_tcp_recv_begin", "network_tcp_recv"]
         }
 
 with open(EVENT_LIST[event][0], 'r') as f:
@@ -83,7 +81,6 @@ for i in range(0, 10):
         b.attach_kprobe(event = EVENT_LIST[event][4], fn_name = EVENT_LIST[event][5], cpu=i)
 
 interval = interval * 1000
-#for idx in range(0,10):
 b.kprobe_poll(timeout = interval)
 
 print_map()

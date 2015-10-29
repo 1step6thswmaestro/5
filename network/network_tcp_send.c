@@ -1,5 +1,5 @@
 /*
- * Event : network.send
+ * Event : network.tcp_send
  * Data to crawl : total count, total size
  * Used Kernel-function : tcp_sendmsg
  */
@@ -10,27 +10,27 @@
 #define NUM_ARRAY_MAP_SIZE 1
 #define NUM_MAP_INDEX 0
 
-struct network_send_value
+struct network_tcp_send_value
 {
     u64 count;
     u64 size;
 };
 
     // map where we save total count and size
-BPF_TABLE("array", int, struct network_send_value, network_send_map, NUM_ARRAY_MAP_SIZE);
+BPF_TABLE("array", int, struct network_tcp_send_value, network_tcp_send_map, NUM_ARRAY_MAP_SIZE);
 
-    // add network_send_value.count one
-    // add network_send_value.size sent packet size
+    // add network_tcp_send_value.count one
+    // add network_tcp_send_value.size sent packet size
     // when tcp_sendmsg is called
-int network_send_begin(struct pt_regs *ctx, struct sock *sk, struct msghdr *msg, size_t size)
+int network_tcp_send_begin(struct pt_regs *ctx, struct sock *sk, struct msghdr *msg, size_t size)
 {
-    struct network_send_value *val, val_temp;
+    struct network_tcp_send_value *val, val_temp;
     int map_index = NUM_MAP_INDEX;
     u64 cnt, siz;
     val_temp.count = 0;
     val_temp.size = 0;
 
-    val = network_send_map.lookup_or_init(&map_index, &val_temp);
+    val = network_tcp_send_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);
     val->size += (u64)size;
 
