@@ -27,7 +27,7 @@ int fs_page_writeback_per_inode_begin(struct pt_regs *ctx, struct inode *inode, 
 
     val = fs_page_writeback_per_inode_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);
-    val->size += wbc->wb_bytes; //maybe size
+    //val->size += wbc->wb_bytes; //maybe size
 
     cnt = val->count;
     siz = val->size;
