@@ -65,7 +65,9 @@ EVENT_LIST = {
         "fs.page_writeback_bg" : ["fs/fs_page_writeback_bg.c", "wb_start_background_writeback", "fs_page_writeback_bg_begin", "fs_page_writeback_bg"],
         "fs.page_writeback_per_inode" : ["fs/fs_page_writeback_per_inode.c", "__writeback_single_inode", "fs_page_writeback_per_inode_begin", "fs_page_writeback_per_inode"],
         "network.tcp_send" : ["network/network_tcp_send.c", "tcp_sendmsg", "network_tcp_send_begin", "network_tcp_send"],
-        "network.tcp_recv" : ["network/network_tcp_recv.c", "tcp_recvmsg", "network_tcp_recv_begin", "network_tcp_recv"]
+        "network.tcp_recv" : ["network/network_tcp_recv.c", "tcp_recvmsg", "network_tcp_recv_begin", "network_tcp_recv"],
+        "network.udp_send" : ["network/network_udp_send.c", "udp_sendmsg", "network_udp_send_begin", "network_udp_send"],
+        "network.udp_recv" : ["network/network_udp_recv.c", "udp_recvmsg", "network_udp_recv_begin", "network_udp_recv"]
         }
 
 with open(EVENT_LIST[event][0], 'r') as f:
