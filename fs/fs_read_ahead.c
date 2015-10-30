@@ -6,6 +6,7 @@
 
 #include <uapi/linux/ptrace.h>
 #include <linux/mm_types.h>
+#include <asm/page.h>
 
 #define NUM_ARRAY_MAP_SIZE 1
 #define NUM_MAP_INDEX 0
@@ -18,17 +19,18 @@ struct fs_read_ahead_value
 
 BPF_TABLE("array", int, struct fs_read_ahead_value, fs_read_ahead_map, NUM_ARRAY_MAP_SIZE);
 
-int fs_read_ahead_begin(struct pt_regs *ctx, struct address_space *mapping, struct file *filp, pgoff_t offset, unsigned long nr_to_read, unsigned long lookahead_size)
+int fs_read_ahead_begin(struct pt_regs *ctx)
 {
     struct fs_read_ahead_value *val, val_temp;
     int map_index = NUM_MAP_INDEX;
-    u64 cnt, siz;
+    u64 cnt, siz, look_ahead_size;
     val_temp.count = 0;
     val_temp.size = 0;
+    look_ahead_size = ctx->r8;
 
     val = fs_read_ahead_map.lookup_or_init(&map_index, &val_temp);
     ++(val->count);
-    val->size += lookahead_size;
+    val->size += look_ahead_size * PAGE_SIZE;
 
     cnt = val->count;
     siz = val->size;
