@@ -3,6 +3,7 @@ import time
 import sys
 import argparse
 import os
+import multiprocessing
 
 parser = argparse.ArgumentParser(description = "Notifier usage\nex) sudo python tester.py --event task.create --condition \"count > 1\" --time 10 --script \"bash script.sh\"")
 parser.add_argument("--event", type=str, default=None, help = "the kind of event that you want notify")
@@ -78,7 +79,7 @@ rep = "EXPRESSION"
 bpf_code = cfile.replace(rep, expr)
 
 b = BPF(text = bpf_code, cb = call_back, debug=0)
-for i in range(0, 10):
+for i in range(0, multiprocessing.cpu_count()):
     b.attach_kprobe(event = EVENT_LIST[event][1], fn_name = EVENT_LIST[event][2], cpu=i)
     if event == "memory.free_page":
         b.attach_kprobe(event = EVENT_LIST[event][4], fn_name = EVENT_LIST[event][5], cpu=i)
