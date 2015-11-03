@@ -60,7 +60,7 @@ def memory_free_page():
     source = source.replace("SIZE", '(1 << (u64)order) * PAGE_SIZE')
     return (source, "__free_pages_ok")
 
-def memroy_reclaim_bc():
+def memroy_reclaim():
     read_text = read_file("general/general.c")
     source = read_text.replace("HEADER", '#include <linux/mmzone.h>\n#include<asm/page.h>')
     source = source.replace("PARAMETER", ', pg_data_t *pgdat, int order')
@@ -111,7 +111,7 @@ def network_tcp_recv():
 
 def network_tcp_send():
     read_text = read_file("general/general.c")
-    source = read_text.replace("HEADER", "#include <net/tcp.h>")
+    source = read_text.replace("HEADER", "#include <net/tcp.h>\n #include <net/inet_common.h>")
     source = source.replace("PARAMETER", ',struct sock *sk, struct msghdr *msg, size_t size')
     source = source.replace("SIZE", '(u64)size')
     return (source, "tcp_sendmsg")

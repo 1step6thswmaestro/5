@@ -29,8 +29,14 @@ if args.script:
 def print_map():
     print ("-------------------")
     map_name = 'map'
+    i = 0;
     for k,v in b[map_name].items():
+        if i == 1:
+            print("speed per sec : %u" %(v.count))
+            return
+
         print ("total count : %u" % (v.count))
+        i= i+1
         try:
             print ("total size : %u" % (v.size))
         except:
@@ -61,7 +67,7 @@ EVENT_LIST = {
         "memory.free" : memory_free(),
         "memory.alloc_page" : memory_alloc_page(),
         #"memory.free_page" : ["memory/memory_free_page.c", "__free_pages_ok", "memory_free_page_begin", "memory_free_page", "free_hot_cold_page", "memory_free_page_order_zero_begin"],
-        "memory.reclaim" : memroy_reclaim_bc(),
+        "memory.reclaim" : memroy_reclaim(),
         "fs.pagecache_access" : fs_pagecache_access(),
         "fs.pagecache_miss" : fs_pagecache_miss(),
         "fs.read_ahead" : fs_read_ahead(),
