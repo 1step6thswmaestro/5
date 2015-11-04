@@ -62,10 +62,10 @@ def memory_free_page():
 
 def memroy_reclaim():
     read_text = read_file("general/general.c")
-    source = read_text.replace("HEADER", '#include <linux/mmzone.h>\n#include<asm/page.h>')
-    source = source.replace("PARAMETER", ', pg_data_t *pgdat, int order')
+    source = read_text.replace("HEADER", '#include <linux/mmzone.h>')
+    source = source.replace("PARAMETER", ', struct zonelist *zonelist, int order')
     source = source.replace("SIZE", '(1<<order) * PAGE_SIZE')
-    return (source, "balance_pgdat")
+    return (source, "try_to_free_pages")
 
 def fs_pagecache_access():
     read_text = read_file("general/general.c")
