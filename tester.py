@@ -68,6 +68,7 @@ EVENT_LIST = {
         "memory.alloc_page" : memory_alloc_page(),
         #"memory.free_page" : ["memory/memory_free_page.c", "__free_pages_ok", "memory_free_page_begin", "memory_free_page", "free_hot_cold_page", "memory_free_page_order_zero_begin"],
         "memory.reclaim" : memroy_reclaim(),
+        "memory.reclaim_direct" : memory_reclaim_direct(),
         "fs.pagecache_access" : fs_pagecache_access(),
         "fs.pagecache_miss" : fs_pagecache_miss(),
         "fs.read_ahead" : fs_read_ahead(),
@@ -86,10 +87,11 @@ rep = "EXPRESSION"
 bpf_code = cfile.replace(rep, expr)
 
 b = BPF(text = bpf_code, cb = call_back, debug=0)
-b.attach_kprobe(event= event_name, fn_name='func')
 
-for i in range(0, multiprocessing.cpu_count()):
-    b.attach_kprobe(event = event_name, fn_name = 'func', cpu=i)
+b.attach_kprobe(event_re="(__free_pages_ok|free_hot_cold_page)", fn_name=memory_free_page_order_zero )
+
+#for i in range(0, multiprocessing.cpu_count()):
+#    b.attach_kprobe(event = event_name, fn_name = 'func', cpu=i)
 
 interval = interval * 1000
 b.kprobe_poll(timeout = interval)

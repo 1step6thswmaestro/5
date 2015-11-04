@@ -1,3 +1,5 @@
+#define pr_fmt(fmt) "BPF:"fmt
+#define KBUILD_MODNAME ""
 #include <uapi/linux/ptrace.h>
 HEADER
 
