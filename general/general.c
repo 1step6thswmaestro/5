@@ -1,7 +1,7 @@
 #include <uapi/linux/ptrace.h>
 HEADER
 
-#define NUM_ARRAY_MAP_SIZE 2
+#define NUM_ARRAY_MAP_SIZ 2
 #define NUM_MAP_VAL_INDEX 0
 #define NUM_MAP_SPD_INDEX 1
 #define NUM_SEC 1000000000
@@ -12,7 +12,7 @@ struct value
     u64 size;
 };
 
-BPF_TABLE("array", int, struct value, map, NUM_ARRAY_MAP_SIZE);
+BPF_TABLE("array", int, struct value, map, NUM_ARRAY_MAP_SIZ);
 
 int func(struct pt_regs * ctx PARAMETER){
     struct value *val, *val_spd, val_temp;
