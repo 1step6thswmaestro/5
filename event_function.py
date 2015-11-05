@@ -65,13 +65,6 @@ def memroy_reclaim():
     source = read_text.replace("HEADER", '#include <linux/mmzone.h>\n#include<asm/page.h>')
     source = source.replace("PARAMETER", ', struct zonelist *zonelist, int order, gfp_t gfp_mask')
     source = source.replace("SIZE", '(1<<order) * PAGE_SIZE')
-    return (source, "balance_pgdat")
-
-def memory_reclaim_direct():
-    read_text = read_file("general/general.c")
-    source = read_text.replace("HEADER", '#include <linux/mmzone.h>\n#include<asm/page.h>')
-    source = source.replace("PARAMETER", ', pg_data_t *pgdat, int order')
-    source = source.replace("SIZE", '(1<<order) * PAGE_SIZE')
     return (source, "try_to_free_pages")
 
 def fs_pagecache_access():
