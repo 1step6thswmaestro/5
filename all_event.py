@@ -10,6 +10,8 @@ from event_function import *
 ES_URL = 'localhost:9200'
 conn = None
 
+bulk = ''
+header = '{"create":{"_index":"lden", "_type":"events"}}\n'
 
 def trace_begin():
     global conn, ES_INDEX
@@ -78,34 +80,46 @@ EVENT_LIST = {
         "network.udp_send" : network_udp_send(),
         "network.udp_recv" : network_udp_recv(),
         }
-def run_event_tracing(event):
-    (cfile, event_name) = EVENT_LIST[event]
-    bpf_code = cfile.replace("EXPRESSION", "0")
-    b = BPF(text = bpf_code)
-    b.attach_kprobe(event=event_name, fn_name='func')
+def run_event_tracing(b, event):
+    global bulk, header
+
     count = 0
     size = 0
-    while 1:
-        time.sleep(1)
-        for k,v in b["map"].items():
-            count = v.count
-            size = v.size
-            break
-        timestamp = time.strftime("%Y-%m-%dT%H:%M:%S", time.localtime())
-        process_event(event.replace('.','_'), count, size, timestamp)
-
-
+    for k,v in b["map"].items():
+        count = v.count
+        size = v.size
+        v.count = 0
+        break
+    timestamp = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
+    bulk += header
+    bulk += '{ "event" : "%s", "count" : %d, "size" : %d, "time" : "%s"}\n' %(event.replace('.','_'), count, size, timestamp)
 
 
 if __name__ == "__main__":
     task_list = []
     trace_begin()
     for k in EVENT_LIST.keys():
-        task_list.append(Process(target=run_event_tracing, args=(k,)))
-    for p in task_list:
-        p.start()
+        (cfile, event_name) = EVENT_LIST[k]
+        bpf_code = cfile.replace("EXPRESSION", "0")
+        b = BPF(text = bpf_code)
+        b.attach_kprobe(event=event_name, fn_name='func')
+        task_list.append((b, k))
 
+    current_time = time.time()
+    sleep_time = int(current_time)+1 - current_time
 
     while 1:
-        time.sleep(1)
+        bulk = ''
+        time.sleep(sleep_time)
+        for i, v in task_list:
+            run_event_tracing(i, v) #i is bpf object, v is eventname
 
+        bulk += '\n'
+        conn.request('POST', '/_bulk', bulk)
+        resp = conn.getresponse()
+        data = resp.read()
+        if resp.status != 200 and resp.status != 201:
+            print "post document: ", resp.status, ":", resp.reason
+            print data
+        start = time.time()
+        sleep_time = int(start) + 1 - start
