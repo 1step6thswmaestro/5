@@ -2,7 +2,8 @@
 
 tester.py usage
 
-    $ sudo python tester.py --event memory.alloc --condition "cnt > 1 && siz > 1" --time 10 --script "bash script.sh"
+    $ sudo python tester.py --expr "size(memory.alloc) > 100000" --time 10 --script "bash script.sh"
 
-cnt : it means the count of event that happened  
-siz : it means the size of something that the event handled
+count : it means the count of event that happened  
+size : it means the size of something that the event handled
+speed : it means the velocity of count per sec

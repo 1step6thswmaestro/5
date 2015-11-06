@@ -53,8 +53,8 @@ class ExpressionParser:
             expected_token_type = 5 # 첫 토큰은 함수나 상수만 가능
 
             while True:
-                print result
-                print call_stack
+                #print result
+                #print call_stack
                 if last_idx != len(side_expr[side_expr_idx]) and expected_token_type == 0:
                     print "Unexpected token"
                     exit()
@@ -129,7 +129,7 @@ class ExpressionParser:
                     first_idx = last_idx
                     expected_token_type = 0 # 파라미터나 상수는 콜스택의 top에 있어야만 한다
 
-        print result
+        return result
 
     def splitExpression(self):
         op_idx = -1
