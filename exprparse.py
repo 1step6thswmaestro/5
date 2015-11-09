@@ -22,11 +22,8 @@ class ExpressionParser:
     """
 
     def __init__(self,
-                 expression,
-                 functions,
-                 parameters,
                  operators):
-        self.expr = expression
+        self.expr = ""
         self.token = {}
         self.ops = operators
 
@@ -34,13 +31,14 @@ class ExpressionParser:
         인자로 받은 토큰들을 분류한다.
         함수 타입이면 1, 파라미터 타입이면 2, 상수 타입이면 4로 분류
         """
-        for new_token in functions:
-            self.token[new_token] = 1
-        for new_token in parameters:
-            self.token[new_token] = 2
+    def add_functionToken(self, token):
+        self.token[token] = 1
 
-    def parse_expr(self):
+    def add_parameterToken(self, token):
+        self.token[token] = 2
 
+    def parse_expr(self, expression):
+        self.expr = expression
         side_expr = self.splitExpression()
         result = [side_expr[0]]
 
