@@ -50,24 +50,22 @@ if args_result.script:
     shscript = args_result.script
     print ("script: %s" % (shscript))
 
-event_list = []
-for k, v in EVENT_LIST.items():
-    event_list.append(k)
+expr_parser = ExpressionParser(operators=["<=", ">=", "=", ">", "<", "<>"])
 
-func_list = []
 for k, v in FUNC_LIST.items():
-    func_list.append(k)
+    expr_parser.add_functionToken(k)
 
-expr_parser = ExpressionParser(expression=expr, functions=func_list,
-        parameters=event_list, operators=["<=", ">=", "=", ">", "<", "<>"])
-expr_result = expr_parser.parse_expr()
+for k, v in EVENT_LIST.items():
+    expr_parser.add_parameterToken(k)
+
+expr_result = expr_parser.parse_expr(expression=expr)
 
 event_type = [None, None]
 event_name = None
 event_measure = None
 for i in range(1,3):
     if len(expr_result[i]) == 1:
-        event_type[i -1] = 1 #constanti
+        event_type[i -1] = 1 #constant
         event_bound = expr_result[i][0]
     else:
         event_type[i - 1] = 0 #function
