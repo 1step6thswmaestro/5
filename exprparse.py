@@ -23,7 +23,6 @@ class ExpressionParser:
 
     def __init__(self,
                  operators):
-        self.expr = ""
         self.token = {}
         self.ops = operators
 
@@ -38,21 +37,17 @@ class ExpressionParser:
         self.token[token] = 2
 
     def parse_expr(self, expression):
-        self.expr = expression
-        side_expr = self.splitExpression()
+        side_expr = self.splitExpression(expression)
         result = [side_expr[0]]
 
         for side_expr_idx in range(1, 3):
-            side_expr[side_expr_idx] = side_expr[side_expr_idx].lstrip()
-            side_expr[side_expr_idx] = side_expr[side_expr_idx].rstrip()
+            side_expr[side_expr_idx] = side_expr[side_expr_idx].lstrip().rstrip()
             call_stack = []
             first_idx = 0
             last_idx = 0
             expected_token_type = 5 # 첫 토큰은 함수나 상수만 가능
 
             while True:
-                #print result
-                #print call_stack
                 if last_idx != len(side_expr[side_expr_idx]) and expected_token_type == 0:
                     print "Unexpected token"
                     exit()
@@ -129,17 +124,17 @@ class ExpressionParser:
 
         return result
 
-    def splitExpression(self):
+    def splitExpression(self, expression):
         op_idx = -1
         result = []
         for ops_idx in range(0, len(self.ops)):
-            op_idx = self.expr.find(self.ops[ops_idx])
+            op_idx = expression.find(self.ops[ops_idx])
             if op_idx != -1:
                 result.append(self.ops[ops_idx])
                 break
 
         if op_idx == -1:
-            print "No operator in this expression \"" + self.expr + "\""
+            print "No operator in this expression \"" + expression + "\""
             exit()
 
-        return result + [self.expr[0:op_idx], self.expr[op_idx + len(result[0]):]]
+        return result + [expression[0:op_idx], expression[op_idx + len(result[0]):]]
