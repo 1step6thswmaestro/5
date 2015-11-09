@@ -6,14 +6,55 @@ class ConditionParser:
     raw한 expr 인자를 그대로 받아서 context flow graph와 각 boolean expr에
     해당하는 expr을 반환해준다. 이 클래스를 통해 반환받은 expr들을 올바른 bpf 프로그램이
     작동하도록 파싱하기 위해선 ExpressionParser 클래스를 활용할 것.
+    예시 input:
+    "count(task.switch) > 100 and (size(memory.alloc) > 20 or count(memory.alloc) < 50) and size(task.switch) < 30"
+    예시 output:
+    [1, [1, "count(task.switch) > 100", [2, "size(memory.alloc) > 20", "count(memory.alloc) < 50"], "size(task.switch) < 30"]
+
+    예시 input2:
+    a & b & c | d & e | f | g
+    예시 output2:
+    [2, [2, [2, [1, [1, a, b], c], [1, d, e]], f], g]
     """
 
-    def __init__(self,
-                 expression):
-        self.expr = expression
+    def __init__(self):
+        self.expr = ""
+        self.ops = {}
 
-    def parse_expr(self):
-        print(self.expr)
+        """
+        인자로 받은 연산자들을 분류한다.
+        AND 타입이면 1, OR 타입이면 2
+        """
+    def add_andOperator(self, token):
+        self.ops[token] = 1
+
+    def add_orOperator(self, token):
+        self.ops[token] = 2
+
+    def parse_cond(self, condition):
+        result = []
+        condition = condition.lstrip()
+        expr_idx = 0
+        last_op = -1
+        while True:
+            if (condition[expr_idx] == '('):
+                print 1
+            else:
+                min = -1
+                min_op_type =""
+                for k, v in self.ops.items():
+                    op_idx = condition.find(k)
+                    if op_idx != -1 and (min > op_idx or min == -1):
+                        min = op_idx
+                        min_op_type = v
+
+                if min == -1:
+                    result.append(condition)
+                    return result
+                elif min_op_type == 2:
+                    if last_op != -1:
+
+
 
 class ExpressionParser:
     """
