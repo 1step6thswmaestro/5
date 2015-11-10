@@ -1,32 +1,11 @@
 from bcc import BPF
-from exprparse import *
+from include.parser.exprparse import ExpressionParser
+from include.evtmanage import EventManager
 import time
 import sys
 import argparse
 import os
 import multiprocessing
-from event_function import *
-
-EVENT_LIST = {
-        "task.create" : task_create(),
-        "task.exec" : task_exec(),
-        "task.exit" : task_exit(),
-        "task.switch" : task_switch(),
-        "memory.alloc" : memory_alloc(),
-        "memory.free" : memory_free(),
-        "memory.alloc_page" : memory_alloc_page(),
-        #"memory.free_page" : ["memory/memory_free_page.c", "__free_pages_ok", "memory_free_page_begin", "memory_free_page", "free_hot_cold_page", "memory_free_page_order_zero_begin"],
-        "memory.reclaim" : memroy_reclaim(),
-        "fs.pagecache_access" : fs_pagecache_access(),
-        "fs.pagecache_miss" : fs_pagecache_miss(),
-        "fs.read_ahead" : fs_read_ahead(),
-        "fs.page_writeback_bg" : fs_page_writeback_bg(),
-        "fs.page_writeback_per_inode" : fs_page_writeback_per_inode(),
-        "network.tcp_send" : network_tcp_send(),
-        "network.tcp_recv" : network_tcp_recv(),
-        "network.udp_send" : network_udp_send(),
-        "network.udp_recv" : network_udp_recv(),
-        }
 
 FUNC_LIST = {
         "count" : "cnt",
@@ -76,7 +55,7 @@ for i in range(1,3):
 def print_map():
     print ("-------------------")
     map_name = 'map'
-    i = 0;
+    i = 0
     for k,v in b[map_name].items():
         if i == 1:
             print("speed per sec : %u" %(v.count))
@@ -113,10 +92,11 @@ else:
         rep_str = event_bound + expr_result[0] + event_measure
     
     rep = "EXPRESSION"
-    (cfile, event_name) = EVENT_LIST[event_name]
+    event_manager = EventManager()
+    (cfile, event_name) = event_manager.EVENT_LIST[event_name]
     bpf_code = cfile.replace(rep, rep_str)
 
-    b = BPF(text = bpf_code, cb = call_back, debug=0)
+    b = BPF(text=bpf_code, cb=call_back, debug=0)
 
     #b.attach_kprobe(event_re="(__free_pages_ok|free_hot_cold_page)", fn_name=memory_free_page_order_zero )
 
