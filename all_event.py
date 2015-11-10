@@ -57,6 +57,27 @@ def process_event(event, count, size, timestamp):
     if resp.status != 201:
         print "post document: ", resp.status, ":", resp.reason
         print data
+EVENT_LIST_data = {
+        "task.create" : {"count" : 0 , "size" : 0},
+        "task.exec" :  {"count" : 0 , "size" : 0},
+        "task.exit" :  {"count" : 0 , "size" : 0},
+        "task.switch" :  {"count" : 0 , "size" : 0},
+        "memory.alloc" :  {"count" : 0 , "size" : 0},
+        "memory.free" :  {"count" : 0 , "size" : 0},
+        "memory.alloc_page" :  {"count" : 0 , "size" : 0},
+        #"memory.free_page" : ["memory/memory_free_page.c", "__free_pages_ok", "memory_free_page_begin", "memory_free_page", "free_hot_cold_page", "memory_free_page_order_zero_begin"],
+        "memory.reclaim" :  {"count" : 0 , "size" : 0},
+        #"memory.reclaim_direct" : memory_reclaim_direct(),
+        "fs.pagecache_access" :  {"count" : 0 , "size" : 0},
+        "fs.pagecache_miss" :  {"count" : 0 , "size" : 0},
+        "fs.read_ahead" :  {"count" : 0 , "size" : 0},
+        "fs.page_writeback_bg" :  {"count" : 0 , "size" : 0},
+        "fs.page_writeback_per_inode" :  {"count" : 0 , "size" : 0},
+        "network.tcp_send" :  {"count" : 0 , "size" : 0},
+        "network.tcp_recv" :  {"count" : 0 , "size" : 0},
+        "network.udp_send" :  {"count" : 0 , "size" : 0},
+        "network.udp_recv" :  {"count" : 0 , "size" : 0}
+        }
 
 
 EVENT_LIST = {
@@ -86,9 +107,10 @@ def run_event_tracing(b, event):
     count = 0
     size = 0
     for k,v in b["map"].items():
-        count = v.count
-        size = v.size
-        v.count = 0
+        count = v.count - EVENT_LIST_data[event]["count"]
+        size = v.size - EVENT_LIST_data[event]["size"]
+        EVENT_LIST_data[event]["count"] = v.count
+        EVENT_LIST_data[event]["size"] = v.size
         break
     timestamp = time.strftime("%Y-%m-%dT%H:%M:%S", time.gmtime())
     bulk += header
