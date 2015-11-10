@@ -1,4 +1,5 @@
-#-*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+
 
 class ConditionParser:
     """
@@ -7,12 +8,12 @@ class ConditionParser:
     해당하는 expr을 반환해준다. 이 클래스를 통해 반환받은 expr들을 올바른 bpf 프로그램이
     작동하도록 파싱하기 위해선 ExpressionParser 클래스를 활용할 것.
     예시 input:
-    "count(task.switch) > 100 and (size(memory.alloc) > 20 or count(memory.alloc) < 50) and size(task.switch) < 30"
+    "a & (c | d) & e"
     예시 output:
-    [1, [1, "count(task.switch) > 100", [2, "size(memory.alloc) > 20", "count(memory.alloc) < 50"], "size(task.switch) < 30"]
+    [1, [1, ['a '], [2, ['c '], ['d']]], 'e ']
 
     예시 input2:
-    a & b & c | d & e | f | g
+    "a & b & c | d & e | f | g"
     예시 output2:
     [2, [1, [1, ['a '], ['b ']], ['c ']], [2, [1, ['d '], ['e ']], [2, ['f '], ['g']]]]
     """
@@ -25,10 +26,11 @@ class ConditionParser:
         인자로 받은 연산자들을 분류한다.
         AND 타입이면 1, OR 타입이면 2
         """
-    def add_andOperator(self, token):
+
+    def add_and_operator(self, token):
         self.ops[token] = 1
 
-    def add_orOperator(self, token):
+    def add_or_operator(self, token):
         self.ops[token] = 2
 
     def parse_cond(self, condition):
@@ -37,42 +39,94 @@ class ConditionParser:
         last_op = -1
         while True:
             condition = condition[expr_idx:].lstrip()
-            if (condition[0] == '('):
-                print 1
-            else:
-                min = -1
-                min_op_type = ""
-                min_op_str = ""
-                for k, v in self.ops.items():
-                    op_idx = condition.find(k)
-                    if op_idx != -1 and (min > op_idx or min == -1):
-                        min = op_idx
-                        min_op_type = v
-                        min_op_str = k
+            if condition[0] == '(':
+                par_cnt = 0
+                while True:
+                    expr_idx += 1
+                    if par_cnt == len(condition):  # 괄호 짝이 맞지 않고 문장이 끝남
+                        print "Broken condition expression"
+                        exit()
 
-                if min == -1: # 해당 문장 뒤에 연산자가 없음
-                    result.append(condition)
+                    if condition[expr_idx] == '(':
+                        par_cnt += 1
+                    elif condition[expr_idx] == ')':
+                        if par_cnt == 0:
+                            min_list = self.find_operator(condition[expr_idx:])
+
+                            if condition[expr_idx + 1: expr_idx + min_list[0]].lstrip() != "":
+                                print "Broken condition expression"
+                                exit()
+
+                            if min_list[0] == -1:  # 해당 문장 뒤에 연산자가 없음
+                                result.append(self.parse_cond(condition[1: expr_idx]))
+                                return result
+
+                            if last_op == -1:
+                                if min_list[1] == 2:
+                                    result = [2, self.parse_cond(condition[1: expr_idx]),
+                                              self.parse_cond(condition[expr_idx + min_list[0] + min_list[2]:])]
+                                    return result
+                                else:
+                                    last_op = 1
+                                    result = [1, self.parse_cond(condition[1: expr_idx])]
+                            else:
+                                if min_list[1] == 2:
+                                    result.append(self.parse_cond(condition[1: expr_idx]))
+                                    result = [2, result,
+                                              self.parse_cond(condition[expr_idx + min_list[0] + min_list[2]:])]
+                                    return result
+                                else:
+                                    result.append(self.parse_cond(condition[1: expr_idx]))
+                                    result = [1, result]
+
+                            expr_idx = expr_idx + min_list[0] + min_list[2]
+                            break
+
+                        else:
+                            par_cnt -= 1
+
+            else:
+                min_list = self.find_operator(condition)
+
+                if min_list[0] == -1:  # 해당 문장 뒤에 연산자가 없음
+                    result.append([condition])
                     return result
 
                 if last_op == -1:
-                    if min_op_type == 2:
-                        result = [2, [condition[:min]], self.parse_cond(condition[min + len(min_op_str):])]
+                    if min_list[1] == 2:
+                        result = [2, [condition[:min_list[0]]], self.parse_cond(condition[min_list[0] + min_list[2]:])]
                         return result
                     else:
                         last_op = 1
-                        result = [1, [condition[:min]]]
+                        result = [1, [condition[:min_list[0]]]]
                 else:
-                    if min_op_type == 2:
-                        result.append([condition[:min]])
-                        result = [2, result, self.parse_cond(condition[min + len(min_op_str):])]
+                    if min_list[1] == 2:
+                        result.append([condition[:min_list[0]]])
+                        result = [2, result, self.parse_cond(condition[min_list[0] + min_list[2]:])]
                         return result
                     else:
-                        result.append([condition[:min]])
+                        result.append([condition[:min_list[0]]])
                         result = [1, result]
 
-                expr_idx = min + len(min_op_str)
+                expr_idx = min_list[0] + min_list[2]
 
+    def find_operator(self, expression):
+        """
+        :param expression: 연산자가 출현하는 최초의 위치를 찾는다
+        :return: [연산자가 출현하는 최초의 위치, 연산자의 타입, 연산자 문자열 자체]
+        """
 
+        min_idx = -1
+        min_op_type = ""
+        min_op_str_len = -1
+        for k, v in self.ops.items():
+            op_idx = expression.find(k)
+            if op_idx != -1 and (min_idx > op_idx or min_idx == -1):
+                min_idx = op_idx
+                min_op_type = v
+                min_op_str_len = len(k)
+
+        return [min_idx, min_op_type, min_op_str_len]
 
 
 class ExpressionParser:
@@ -90,14 +144,15 @@ class ExpressionParser:
         인자로 받은 토큰들을 분류한다.
         함수 타입이면 1, 파라미터 타입이면 2, 상수 타입이면 4로 분류
         """
-    def add_functionToken(self, token):
+
+    def add_function_token(self, token):
         self.token[token] = 1
 
-    def add_parameterToken(self, token):
+    def add_parameter_token(self, token):
         self.token[token] = 2
 
     def parse_expr(self, expression):
-        side_expr = self.splitExpression(expression)
+        side_expr = self.split_expr(expression)
         result = [side_expr[0]]
 
         for side_expr_idx in range(1, 3):
@@ -105,7 +160,7 @@ class ExpressionParser:
             call_stack = []
             first_idx = 0
             last_idx = 0
-            expected_token_type = 5 # 첫 토큰은 함수나 상수만 가능
+            expected_token_type = 5  # 첫 토큰은 함수나 상수만 가능
 
             while True:
                 if last_idx != len(side_expr[side_expr_idx]) and expected_token_type == 0:
@@ -116,7 +171,10 @@ class ExpressionParser:
                 elif last_idx == len(side_expr[side_expr_idx]) and expected_token_type == 0:
                     result.append(call_stack)
                     break
-                elif first_idx == last_idx or (side_expr[side_expr_idx][last_idx] != " " and side_expr[side_expr_idx][last_idx] != '(' and side_expr[side_expr_idx][last_idx] != ')'):
+                elif first_idx == last_idx or (
+                                    side_expr[side_expr_idx][last_idx] != " " and
+                                    side_expr[side_expr_idx][last_idx] != '(' and
+                                side_expr[side_expr_idx][last_idx] != ')'):
                     last_idx += 1
                     continue
 
@@ -136,7 +194,7 @@ class ExpressionParser:
                         exit()
 
                 if (expected_token_type & token_type) == 0:
-                    print "Unexpected token type \'" + current_token +"\'"
+                    print "Unexpected token type \'" + current_token + "\'"
                     exit()
 
                 if token_type == 1:
@@ -157,9 +215,11 @@ class ExpressionParser:
                         last_idx += 1
 
                     call_stack.insert(0, current_token)
-                    side_expr[side_expr_idx] = side_expr[side_expr_idx].replace(side_expr[side_expr_idx][last_idx:], side_expr[side_expr_idx][last_idx:].lstrip())
+                    side_expr[side_expr_idx] = side_expr[side_expr_idx].replace(side_expr[side_expr_idx][last_idx:],
+                                                                                side_expr[side_expr_idx][
+                                                                                last_idx:].lstrip())
                     first_idx = last_idx
-                    expected_token_type = 7 # 함수 뒤에는 모든 토큰 타입이 전부 올 수 있다
+                    expected_token_type = 7  # 함수 뒤에는 모든 토큰 타입이 전부 올 수 있다
                 else:
                     # 토큰이 파라미터나 상수일 경우
                     brace_cnt = len(call_stack)
@@ -178,13 +238,19 @@ class ExpressionParser:
                         last_idx += 1
 
                     call_stack.insert(0, current_token)
-                    side_expr[side_expr_idx] = side_expr[side_expr_idx].replace(side_expr[side_expr_idx][last_idx:], side_expr[side_expr_idx][last_idx:].lstrip())
+                    side_expr[side_expr_idx] = side_expr[side_expr_idx].replace(side_expr[side_expr_idx][last_idx:],
+                                                                                side_expr[side_expr_idx][
+                                                                                last_idx:].lstrip())
                     first_idx = last_idx
-                    expected_token_type = 0 # 파라미터나 상수는 콜스택의 top에 있어야만 한다
+                    expected_token_type = 0  # 파라미터나 상수는 콜스택의 top에 있어야만 한다
 
         return result
 
-    def splitExpression(self, expression):
+    def split_expr(self, expression):
+        """
+        :param expression: 문장 전체에서 기준이 되는 비교 연산자를 찾고 이를 분리한다
+        :return: [연산자의 위치, 연산자 기준으로 앞 문장, 연산자 기준으로 뒷 문장]
+        """
         op_idx = -1
         result = []
         for ops_idx in range(0, len(self.ops)):
