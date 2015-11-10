@@ -8,7 +8,7 @@ class EventManager:
     """
 
     def __init__(self):
-        self.source = self.read_file("../src/general.c")
+        self.source = self.read_file("./src/general.c")
         self.EVENT_LIST = {
             "task.create": self.task_create(),
             "task.exec": self.task_exec(),

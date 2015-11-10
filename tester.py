@@ -30,12 +30,12 @@ if args_result.script:
     print ("script: %s" % (shscript))
 
 expr_parser = ExpressionParser(operators=["<=", ">=", "=", ">", "<", "<>"])
-
+event_manager = EventManager()
 for k, v in FUNC_LIST.items():
-    expr_parser.add_functionToken(k)
+    expr_parser.add_function_token(k)
 
-for k, v in EVENT_LIST.items():
-    expr_parser.add_parameterToken(k)
+for k, v in event_manager.EVENT_LIST.items():
+    expr_parser.add_parameter_token(k)
 
 expr_result = expr_parser.parse_expr(expression=expr)
 
@@ -92,7 +92,6 @@ else:
         rep_str = event_bound + expr_result[0] + event_measure
     
     rep = "EXPRESSION"
-    event_manager = EventManager()
     (cfile, event_name) = event_manager.EVENT_LIST[event_name]
     bpf_code = cfile.replace(rep, rep_str)
 
