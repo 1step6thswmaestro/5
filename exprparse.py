@@ -14,7 +14,7 @@ class ConditionParser:
     예시 input2:
     a & b & c | d & e | f | g
     예시 output2:
-    [2, [2, [2, [1, [1, a, b], c], [1, d, e]], f], g]
+    [2, [1, [1, ['a '], ['b ']], ['c ']], [2, [1, ['d '], ['e ']], [2, ['f '], ['g']]]]
     """
 
     def __init__(self):
@@ -33,26 +33,45 @@ class ConditionParser:
 
     def parse_cond(self, condition):
         result = []
-        condition = condition.lstrip()
         expr_idx = 0
         last_op = -1
         while True:
-            if (condition[expr_idx] == '('):
+            condition = condition[expr_idx:].lstrip()
+            if (condition[0] == '('):
                 print 1
             else:
                 min = -1
-                min_op_type =""
+                min_op_type = ""
+                min_op_str = ""
                 for k, v in self.ops.items():
                     op_idx = condition.find(k)
                     if op_idx != -1 and (min > op_idx or min == -1):
                         min = op_idx
                         min_op_type = v
+                        min_op_str = k
 
-                if min == -1:
+                if min == -1: # 해당 문장 뒤에 연산자가 없음
                     result.append(condition)
                     return result
-                elif min_op_type == 2:
-                    if last_op != -1:
+
+                if last_op == -1:
+                    if min_op_type == 2:
+                        result = [2, [condition[:min]], self.parse_cond(condition[min + len(min_op_str):])]
+                        return result
+                    else:
+                        last_op = 1
+                        result = [1, [condition[:min]]]
+                else:
+                    if min_op_type == 2:
+                        result.append([condition[:min]])
+                        result = [2, result, self.parse_cond(condition[min + len(min_op_str):])]
+                        return result
+                    else:
+                        result.append([condition[:min]])
+                        result = [1, result]
+
+                expr_idx = min + len(min_op_str)
+
 
 
 

@@ -14,11 +14,11 @@ result = cond.parse_cond(args.expr)
 
 print result
 
-real = ExpressionParser(operators=["<=", ">=", "=", ">", "<", "<>"])
-real.add_functionToken("count")
-real.add_functionToken("size")
-real.add_parameterToken("task.switch")
-real.add_parameterToken("memory.alloc")
-result = real.parse_expr(args.expr)
+#real = ExpressionParser(operators=["<=", ">=", "=", ">", "<", "<>"])
+#real.add_functionToken("count")
+#real.add_functionToken("size")
+#real.add_parameterToken("task.switch")
+#real.add_parameterToken("memory.alloc")
+#result = real.parse_expr(args.expr)
 
-print result
+#print result
