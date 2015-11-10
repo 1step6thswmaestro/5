@@ -1,6 +1,6 @@
 from bcc import BPF
-from include.parser.exprparse import ExpressionParser
-from include.evtmanage import EventManager
+from src.python.parser.exprparse import ExpressionParser
+from src.python.evtmanage import EventManager
 import time
 import sys
 import argparse

@@ -1,1 +1,1 @@
-sudo python tester.py --expr "size(memory.alloc) > 100000" --time 100 --script "bash script.sh"
+sudo python tester.py --expr "count(disk.request) > 3" --time 100 --script "bash event.sh"

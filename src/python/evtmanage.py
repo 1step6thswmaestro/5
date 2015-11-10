@@ -8,7 +8,7 @@ class EventManager:
     """
 
     def __init__(self):
-        self.source = self.read_file("./src/general.c")
+        self.source = self.read_file("./src/c/general.c")
         self.EVENT_LIST = {
             "task.create": self.task_create(),
             "task.exec": self.task_exec(),
@@ -28,6 +28,7 @@ class EventManager:
             "network.tcp_recv": self.network_tcp_recv(),
             "network.udp_send": self.network_udp_send(),
             "network.udp_recv": self.network_udp_recv(),
+            "disk.request": self.disk_request()
         }
 
     def read_file(self, path):
@@ -159,3 +160,11 @@ class EventManager:
                    .replace("PARAMETER", ',struct sock *sk, struct msghdr *msg, size_t len')\
                    .replace("SIZE", '(u64)len'),\
                "udp_recvmsg"
+
+    def disk_request(self):
+        return self.source\
+                   .replace("HEADER", "#include <linux/blkdev.h>")\
+                   .replace("PARAMETER", ', struct request *req')\
+                   .replace("SIZE", '(u64)req->__data_len'),\
+               "blk_account_io_completion"
+

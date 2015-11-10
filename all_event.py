@@ -4,7 +4,7 @@ import sys
 import os
 import httplib
 from multiprocessing import Process
-from include.evtmanage import EventManager
+from src.python.evtmanage import EventManager
 
 
 ES_URL = 'localhost:9200'
