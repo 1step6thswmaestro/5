@@ -16,7 +16,8 @@ struct value
 
 BPF_TABLE("array", int, struct value, map, NUM_ARRAY_MAP_SIZ);
 
-int func(struct pt_regs * ctx PARAMETER){
+int func(struct pt_regs * ctx PARAMETER)
+{
     struct value *val, *val_spd, val_temp;
     int map_index = NUM_MAP_VAL_INDEX;
     int map_spd_index = NUM_MAP_SPD_INDEX;
@@ -29,13 +30,13 @@ int func(struct pt_regs * ctx PARAMETER){
     val->size += SIZE;
     ++(val->count);
 
-    if (val_spd->count == 0 || tim - (val_spd->size) > NUM_SEC){
+    if (val_spd->count == 0 || tim - (val_spd->size) > NUM_SEC)
+    {
         val_spd->size = tim;
         val_spd->count = 1;
     }
-    else{
+    else
         val_spd->count += 1;
-    }
 
     spd = val_spd->count;
     cnt = val->count;
