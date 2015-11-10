@@ -16,7 +16,7 @@ FUNC_LIST = {
 args_parser = argparse.ArgumentParser(description = "Notifier usage\nex) sudo python tester.py --expr \"count(task.switch) > 10\" --time 10 --script \"bash script.sh\"")
 args_parser.add_argument("--expr", type=str, default=None, help = "the kind of event that you want notify")
 args_parser.add_argument("--time", type=int, default=5, help = "timeout second")
-args_parser.add_argument("--script", type=str, default=None, help = "the script to be executed after event happens")
+args_parser.add_argument("--script", type=str, default="event.sh", help = "the script to be executed after event happens")
 args_result = args_parser.parse_args()
 
 if args_result.expr:
