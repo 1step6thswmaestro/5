@@ -40,7 +40,7 @@ class EventManager:
                    .replace("HEADER", '')\
                    .replace("PARAMETER", '')\
                    .replace("SIZE", '0'),\
-               "do_fork"
+               "_do_fork"
 
     def task_exec(self):
         return self.source\
