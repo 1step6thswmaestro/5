@@ -28,7 +28,8 @@ class EventManager:
             "network.tcp_recv": self.network_tcp_recv(),
             "network.udp_send": self.network_udp_send(),
             "network.udp_recv": self.network_udp_recv(),
-            "disk.request": self.disk_request()
+            "disk.read": self.disk_read(),
+            "disk.write": self.disk_write(),
         }
 
     def read_file(self, path):
@@ -185,13 +186,13 @@ class EventManager:
                    .replace("HEADER", "#include <linux/blkdev.h>")\
                    .replace("PARAMETER", ', struct request *req')\
                    .replace("SIZE", '(u64)req->__data_len')\
-                   .replace("CHECK", ""),\
+                   .replace("CHECK", "if(req->bio->bi_rw & 1)return 0;"),\
                "blk_account_io_completion"
     def disk_write(self):
         return self.source\
                    .replace("HEADER", "#include <linux/blkdev.h>")\
                    .replace("PARAMETER", ', struct request *req')\
                    .replace("SIZE", '(u64)req->__data_len')\
-                   .replace("CHECK", ""),\
+                   .replace("CHECK", "if((req->bio->bi_rw & 1) -1)return 0;"),\
                "blk_account_io_completion"
 
