@@ -22,7 +22,6 @@ class EventManager:
             "fs.pagecache_access": self.fs_pagecache_access(),
             "fs.pagecache_miss": self.fs_pagecache_miss(),
             "fs.read_ahead": self.fs_read_ahead(),
-            # "fs.page_writeback_bg": self.fs_page_writeback_bg(),
             "fs.page_writeback_per_inode": self.fs_page_writeback_per_inode(),
             "network.tcp_send": self.network_tcp_send(),
             "network.tcp_recv": self.network_tcp_recv(),
@@ -119,19 +118,12 @@ class EventManager:
                    .replace("SIZE", '(ctx->r8) * PAGE_SIZE'),\
                "__do_page_cache_readahead"
 
-    def fs_page_writeback_bg(self):
-        return self.source\
-                   .replace("HEADER", "#include <linux/backing-dev-defs.h>")\
-                   .replace("PARAMETER", ',struct bdi_writeback * wb')\
-                   .replace("SIZE", '0'),\
-               "wb_start_background_writeback"
-
     def fs_page_writeback_per_inode(self):
         return self.source\
                    .replace("HEADER", "#include <linux/writeback.h>")\
                    .replace("PARAMETER", ',struct inode *inode, struct writeback_control *wbc')\
                    .replace("SIZE", 'wbc->nr_to_write'),\
-               "wb_start_background_writeback"
+               "__writeback_single_inode"
 
     def network_tcp_recv(self):
         return self.source\
