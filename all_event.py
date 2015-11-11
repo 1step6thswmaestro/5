@@ -76,7 +76,8 @@ EVENT_LIST_data = {
         "network.tcp_send" :  {"count" : 0 , "size" : 0},
         "network.tcp_recv" :  {"count" : 0 , "size" : 0},
         "network.udp_send" :  {"count" : 0 , "size" : 0},
-        "network.udp_recv" :  {"count" : 0 , "size" : 0}
+        "network.udp_recv" :  {"count" : 0 , "size" : 0},
+        "disk.request" : {"count" : 0, "size" : 0}
         }
 
 def run_event_tracing(b, event):
