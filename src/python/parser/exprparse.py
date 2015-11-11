@@ -56,7 +56,7 @@ class ExpressionParser:
                     token_type = self.token[current_token]
                 except:
                     try:
-                        if int(current_token):
+                        if int(current_token) > -1:
                             token_type = 4
                     except:
                         if first_idx == last_idx:
