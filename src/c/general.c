@@ -24,6 +24,7 @@ int func(struct pt_regs * ctx PARAMETER)
     u64 cnt, siz, spd, tim = bpf_ktime_get_ns();
     val_temp.count = 0;
     val_temp.size = 0;
+    CHECK
 
     val_spd = map.lookup_or_init(&map_spd_index, &val_temp);
     val = map.lookup_or_init(&map_index, &val_temp);

@@ -28,7 +28,8 @@ class EventManager:
             "network.tcp_recv": self.network_tcp_recv(),
             "network.udp_send": self.network_udp_send(),
             "network.udp_recv": self.network_udp_recv(),
-            "disk.request": self.disk_request()
+            "disk.read": self.disk_read(),
+            "disk.write": self.disk_write(),
         }
 
     def read_file(self, path):
@@ -39,132 +40,159 @@ class EventManager:
         return self.source\
                    .replace("HEADER", '')\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '0'),\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
                "_do_fork"
 
     def task_exec(self):
         return self.source\
                    .replace("HEADER", '')\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '0'),\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
                "sys_execve"
 
     def task_exit(self):
         return self.source\
                    .replace("HEADER", '')\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '0'),\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
                "do_exit"
 
     def task_switch(self):
         return self.source\
                    .replace("HEADER", '')\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '0'),\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
                "finish_task_switch"
 
     def memory_alloc(self):
         return self.source\
                    .replace("HEADER", '')\
                    .replace("PARAMETER", ', size_t size')\
-                   .replace("SIZE", '(u64)size'),\
+                   .replace("SIZE", '(u64)size')\
+                   .replace("CHECK", ""),\
                "__kmalloc"
 
     def memory_free(self):
         return self.source\
                    .replace("HEADER", '')\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '0'),\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
                "kfree"
 
     def memory_alloc_page(self):
         return self.source\
                    .replace("HEADER", '#include<asm/page.h>')\
                    .replace("PARAMETER", ', gfp_t gfp_mask, unsigned int order')\
-                   .replace("SIZE", '(1<<(u64)order)*PAGE_SIZE'),\
+                   .replace("SIZE", '(1<<(u64)order)*PAGE_SIZE')\
+                   .replace("CHECK", ""),\
                "__alloc_pages_nodemask"
 
     def memory_free_page(self):
         return self.source\
                    .replace("HEADER", '#include <linux/pagevec.h>\n#include<asm/page.h>')\
                    .replace("PARAMETER", ', struct page *page, unsinged int order')\
-                   .replace("SIZE", '(1 << (u64)order) * PAGE_SIZE'),\
+                   .replace("SIZE", '(1 << (u64)order) * PAGE_SIZE')\
+                   .replace("CHECK", ""),\
                "__free_pages_ok"
 
     def memory_reclaim(self):
         return self.source\
                    .replace("HEADER", '#include <linux/mmzone.h>\n#include<asm/page.h>')\
                    .replace("PARAMETER", ', struct zonelist *zonelist, int order, gfp_t gfp_mask')\
-                   .replace("SIZE", '(1<<order) * PAGE_SIZE'),\
+                   .replace("SIZE", '(1<<order) * PAGE_SIZE')\
+                   .replace("CHECK", ""),\
                "try_to_free_pages"
 
     def memory_oom_kill(self):
         return self.source\
                    .replace("HEADER", "")\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '0'),\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
                "oom_kill_process"
 
     def fs_pagecache_access(self):
         return self.source\
                    .replace("HEADER", '')\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '0'),\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
                "pagecache_get_page"
 
     def fs_pagecache_miss(self):
         return self.source\
                    .replace("HEADER", '')\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '0'),\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
                "page_cache_sync_readahead"
+               #    "do_generic_file_read"
 
     def fs_read_ahead(self):
         return self.source\
                    .replace("HEADER", "#include <linux/mm_types.h>\n#include<asm/page.h>")\
                    .replace("PARAMETER", '')\
-                   .replace("SIZE", '(ctx->r8) * PAGE_SIZE'),\
+                   .replace("SIZE", '(ctx->r8) * PAGE_SIZE')\
+                   .replace("CHECK", ""),\
                "__do_page_cache_readahead"
 
     def fs_page_writeback_per_inode(self):
         return self.source\
                    .replace("HEADER", "#include <linux/writeback.h>")\
                    .replace("PARAMETER", ',struct inode *inode, struct writeback_control *wbc')\
-                   .replace("SIZE", 'wbc->nr_to_write'),\
+                   .replace("SIZE", 'wbc->nr_to_write')\
+                   .replace("CHECK", ""),\
                "__writeback_single_inode"
 
     def network_tcp_recv(self):
         return self.source\
                    .replace("HEADER", "#include <net/tcp.h>")\
                    .replace("PARAMETER", ',struct sock *sk, struct msghdr *msg, size_t len')\
-                   .replace("SIZE", '(u64)len'),\
+                   .replace("SIZE", '(u64)len')\
+                   .replace("CHECK", ""),\
                "tcp_recvmsg"
 
     def network_tcp_send(self):
         return self.source\
                    .replace("HEADER", "#include <net/tcp.h>\n #include <net/inet_common.h>")\
                    .replace("PARAMETER", ',struct sock *sk, struct msghdr *msg, size_t size')\
-                   .replace("SIZE", '(u64)size'),\
+                   .replace("SIZE", '(u64)size')\
+                   .replace("CHECK", ""),\
                "tcp_sendmsg"
 
     def network_udp_send(self):
         return self.source\
                    .replace("HEADER", "#include <net/udp.h>")\
                    .replace("PARAMETER", ',struct sock *sk, struct msghdr *msg, size_t len')\
-                   .replace("SIZE", '(u64)len'),\
+                   .replace("SIZE", '(u64)len')\
+                   .replace("CHECK", ""),\
                "udp_sendmsg"
 
     def network_udp_recv(self):
         return self.source\
                    .replace("HEADER", "#include <net/udp.h>")\
                    .replace("PARAMETER", ',struct sock *sk, struct msghdr *msg, size_t len')\
-                   .replace("SIZE", '(u64)len'),\
+                   .replace("SIZE", '(u64)len')\
+                   .replace("CHECK", ""),\
                "udp_recvmsg"
 
-    def disk_request(self):
+    def disk_read(self):
         return self.source\
                    .replace("HEADER", "#include <linux/blkdev.h>")\
                    .replace("PARAMETER", ', struct request *req')\
-                   .replace("SIZE", '(u64)req->__data_len'),\
+                   .replace("SIZE", '(u64)req->__data_len')\
+                   .replace("CHECK", "if(req->bio->bi_rw & 1)return 0;"),\
+               "blk_account_io_completion"
+    def disk_write(self):
+        return self.source\
+                   .replace("HEADER", "#include <linux/blkdev.h>")\
+                   .replace("PARAMETER", ', struct request *req')\
+                   .replace("SIZE", '(u64)req->__data_len')\
+                   .replace("CHECK", "if((req->bio->bi_rw & 1) -1)return 0;"),\
                "blk_account_io_completion"
 
