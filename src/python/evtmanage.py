@@ -18,7 +18,8 @@ class EventManager:
             "memory.free": self.memory_free(),
             "memory.alloc_page": self.memory_alloc_page(),
             # "memory.free_page": ["memory/memory_free_page.c", "__free_pages_ok", "memory_free_page_begin", "memory_free_page", "free_hot_cold_page", "memory_free_page_order_zero_begin"],
-            "memory.reclaim": self.memroy_reclaim(),
+            "memory.reclaim": self.memory_reclaim(),
+            "memory.oom_kill": self.memory_oom_kill(),
             "fs.pagecache_access": self.fs_pagecache_access(),
             "fs.pagecache_miss": self.fs_pagecache_miss(),
             "fs.read_ahead": self.fs_read_ahead(),
@@ -90,12 +91,19 @@ class EventManager:
                    .replace("SIZE", '(1 << (u64)order) * PAGE_SIZE'),\
                "__free_pages_ok"
 
-    def memroy_reclaim(self):
+    def memory_reclaim(self):
         return self.source\
                    .replace("HEADER", '#include <linux/mmzone.h>\n#include<asm/page.h>')\
                    .replace("PARAMETER", ', struct zonelist *zonelist, int order, gfp_t gfp_mask')\
                    .replace("SIZE", '(1<<order) * PAGE_SIZE'),\
                "try_to_free_pages"
+
+    def memory_oom_kill(self):
+        return self.source\
+                   .replace("HEADER", "")\
+                   .replace("PARAMETER", '')\
+                   .replace("SIZE", '0'),\
+               "oom_kill_process"
 
     def fs_pagecache_access(self):
         return self.source\
