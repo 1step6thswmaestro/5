@@ -39,6 +39,7 @@ class ConditionParser:
         last_op = -1
         while True:
             condition = condition[expr_idx:].lstrip()
+            expr_idx = 0
             if condition[0] == '(':
                 par_cnt = 0
                 while True:
