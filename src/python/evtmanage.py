@@ -10,6 +10,8 @@ class EventManager:
     def __init__(self):
         self.source = self.read_file("./src/c/general.c")
         self.EVENT_LIST = {
+            "sys.open": self.sys_open(),
+            "sys.kill": self.sys_kill(),
             "task.create": self.task_create(),
             "task.exec": self.task_exec(),
             "task.exit": self.task_exit(),
@@ -35,6 +37,22 @@ class EventManager:
     def read_file(self, path):
         with open(path, 'r') as f:
             return f.read()
+
+    def sys_open(self):
+        return self.source\
+                   .replace("HEADER", '')\
+                   .replace("PARAMETER", '')\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
+               "sys_open"
+
+    def sys_kill(self):
+        return self.source\
+                   .replace("HEADER", '')\
+                   .replace("PARAMETER", '')\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
+               "sys_kill"
 
     def task_create(self):
         return self.source\
