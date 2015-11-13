@@ -30,6 +30,7 @@ class EventManager:
             "network.udp_recv": self.network_udp_recv(),
             "disk.read": self.disk_read(),
             "disk.write": self.disk_write(),
+            "irq.hard" : self.irq_hard(),
         }
 
     def read_file(self, path):
@@ -186,13 +187,21 @@ class EventManager:
                    .replace("HEADER", "#include <linux/blkdev.h>")\
                    .replace("PARAMETER", ', struct request *req')\
                    .replace("SIZE", '(u64)req->__data_len')\
-                   .replace("CHECK", "if(req->bio->bi_rw & 1)return 0;"),\
+                   .replace("CHECK", "if(req->cmd_flags & REQ_WRITE)return 0;"),\
                "blk_account_io_completion"
     def disk_write(self):
         return self.source\
                    .replace("HEADER", "#include <linux/blkdev.h>")\
                    .replace("PARAMETER", ', struct request *req')\
                    .replace("SIZE", '(u64)req->__data_len')\
-                   .replace("CHECK", "if((req->bio->bi_rw & 1) -1)return 0;"),\
-               "blk_account_io_completion"
+                   .replace("CHECK", "if((req->cmd_flags & REQ_WRITE) == 0 )return 0;"),\
+               "blk_account_io_start"
+
+    def irq_hard(self):
+        return self.source\
+                .replace("HEADER", '#include <linux/irq.h>\n #include <linux/irqdesc.h>\n #include<linux/interrupt.h>')\
+                .replace("PARAMETER", ', struct irq_desc *desc')\
+                .replace("SIZE", '0')\
+                .replace("CHECK", ""),\
+            "handle_irq_event_percpu"
 
