@@ -7,7 +7,7 @@ from multiprocessing import Process
 from src.python.evtmanage import EventManager
 
 
-ES_URL = 'localhost:9200'
+ES_URL = '192.168.225.1:9200'
 conn = None
 
 bulk = ''
