@@ -6,6 +6,7 @@ import sys
 import argparse
 import os
 import multiprocessing
+from src.python.all_event import AllEvent
 
 FUNC_LIST = {
         "count" : "cnt",
@@ -17,6 +18,7 @@ args_parser = argparse.ArgumentParser(description = "Notifier usage\nex) sudo py
 args_parser.add_argument("--expr", type=str, default=None, help = "the kind of event that you want notify")
 args_parser.add_argument("--time", type=int, default=5, help = "timeout second")
 args_parser.add_argument("--script", type=str, default="event.sh", help = "the script to be executed after event happens")
+args_parser.add_argument("--all", type=str, default = "n", help = "for all events y/n")
 args_result = args_parser.parse_args()
 
 if args_result.expr:
@@ -28,6 +30,9 @@ if args_result.time:
 if args_result.script:
     shscript = args_result.script
     print ("script: %s" % (shscript))
+if args_result.all == 'y':
+    a =  AllEvent()
+    a.main_run()
 
 expr_parser = ExpressionParser(operators=["<=", ">=", "=", ">", "<", "<>"])
 event_manager = EventManager()
@@ -90,7 +95,7 @@ else:
         rep_str = event_measure + expr_result[0] + event_bound
     else:
         rep_str = event_bound + expr_result[0] + event_measure
-    
+
     rep = "EXPRESSION"
     (cfile, event_name) = event_manager.EVENT_LIST[event_name]
     bpf_code = cfile.replace(rep, rep_str)
