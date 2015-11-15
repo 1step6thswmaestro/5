@@ -21,7 +21,7 @@ int func(struct pt_regs * ctx PARAMETER)
     struct value *val, *val_spd, val_temp;
     int map_index = NUM_MAP_VAL_INDEX;
     int map_spd_index = NUM_MAP_SPD_INDEX;
-    u64 cnt, siz, spd, tim = bpf_ktime_get_ns();
+    u64 tim = bpf_ktime_get_ns();
     val_temp.count = 0;
     val_temp.size = 0;
     CHECK
@@ -38,10 +38,6 @@ int func(struct pt_regs * ctx PARAMETER)
     }
     else
         val_spd->count += 1;
-
-    spd = val_spd->count;
-    cnt = val->count;
-    siz = val->size;
 
     return 0;
 }

@@ -90,9 +90,16 @@ class AllEvent:
         self.trace_begin()
         for k in manager.EVENT_LIST.keys():
             self.EVENT_LIST_data[k] ={"count" : 0, "size" : 0}
-            (cfile, event_name) = manager.EVENT_LIST[k]
-            b = BPF(text=bpf_code)
-            b.attach_kprobe(event=event_name, fn_name='func')
+            code_and_func = manager.EVENT_LIST[k]
+            b = BPF(text=code_and_func[0])
+            if len(code_and_func) > 2:
+                for func_idx in range(1, len(code_and_func)):
+                    if (func_idx & 1) == 0:
+                        continue
+                    b.attach_kprobe(event=code_and_func[func_idx],
+                            fn_name=code_and_func[func_idx + 1])
+            else:
+                b.attach_kprobe(event=code_and_func[1], fn_name='func')
             task_list.append((b, k))
 
         current_time = time.time()
