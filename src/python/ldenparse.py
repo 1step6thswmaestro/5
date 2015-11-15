@@ -73,6 +73,7 @@ class LdenParser:
     def print_help(self):
         print """
  usage: lden [help, -h, --help] COMMAND [ARGS]
+ (This program must be executed with "permission of superuser")
 
  The most commonly used lden commands are:
    all      Trace all events and visualize their data on Kibana
@@ -123,4 +124,4 @@ class LdenParser:
             print "  Error: " + chosen_option + " requires a value"
             self.print_command_help(command, check_list[3])
         else:
-            self.result[command][check_list[2]] = self.argv[index + 1]
+            self.result[1][check_list[2]] = self.argv[index + 1]
