@@ -43,8 +43,5 @@ int func(struct pt_regs * ctx PARAMETER)
     cnt = val->count;
     siz = val->size;
 
-    if (EXPRESSION)
-        return 1;
-
     return 0;
 }

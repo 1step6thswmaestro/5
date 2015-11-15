@@ -91,7 +91,6 @@ class AllEvent:
         for k in manager.EVENT_LIST.keys():
             self.EVENT_LIST_data[k] ={"count" : 0, "size" : 0}
             (cfile, event_name) = manager.EVENT_LIST[k]
-            bpf_code = cfile.replace("EXPRESSION", "0")
             b = BPF(text=bpf_code)
             b.attach_kprobe(event=event_name, fn_name='func')
             task_list.append((b, k))
