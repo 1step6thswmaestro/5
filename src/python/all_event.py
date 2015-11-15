@@ -8,8 +8,21 @@ from evtmanage import EventManager
 
 
 class AllEvent:
-    def __init__(self, ipaddress = '192.168.225.1', port= 9200):
-        self.ES_URL = ipaddress+":"+str(port)
+    def __init__(self, ipaddress, port):
+        self.ES_URL = ""
+
+        if ipaddress is None:
+            self.ES_URL += "192.168.225.1"
+        else:
+            self.ES_URL += ipaddress
+
+        self.ES_URL += ":"
+
+        if port is None:
+            self.ES_URL += "9200"
+        else:
+            self.ES_URL += port
+
         self.conn = None
 
         self.bulk = ''
