@@ -11,6 +11,10 @@ class LdenParser:
         self.argv = argv_list
         self.result = []
         self.commands = ["all", "notify"]
+        self.command_help = [
+                "all [<options>]\n",
+                "notify <expression> [<options>]\n"
+        ]
         self.command_options_help = [
             [
                 """    -a, --address <ip address>  set server ip address to show data
@@ -19,9 +23,6 @@ class LdenParser:
                                 (default: 9200)\n"""
             ],
             [
-                """    -e, --expression <condition expression>
-                                        expression when if event happens
-                                        See README.md to know how to query expression of this option.\n""",
                 """    -t, --time <timeout>                set timeout
                                         (default: infinity)\n""",
                 """    -s, --script <shell script>         execute user-defined shell script\n"""
@@ -29,23 +30,20 @@ class LdenParser:
         ]
         self.command_options = [
             {
-                "-a": ["-a", "a", "address", 0, False],
-                "--address": ["-a", "a", "address", 0, False],
-                "address": ["-a", "a", "address", 0, False],
-                "-p": ["-p", "p", "port", 1, False],
-                "--port": ["-p", "p", "port", 1, False],
-                "port": ["-p", "p", "port", 1, False]
+                "-a": ["-a", "a", "address", 0],
+                "--address": ["-a", "a", "address", 0],
+                "address": ["-a", "a", "address", 0],
+                "-p": ["-p", "p", "port", 1],
+                "--port": ["-p", "p", "port", 1],
+                "port": ["-p", "p", "port", 1]
             },
             {
-                "-e": ["-e", "e", "expression", 0, True],
-                "--expression": ["-e", "e", "expression", 0, True],
-                "expression": ["-e", "e", "expression", 0, True],
-                "-t": ["-t", "t", "time", 1, False],
-                "--time": ["-t", "t", "time", 1, False],
-                "time": ["-t", "t", "time", 1, False],
-                "-s": ["-s", "s", "script", 2, False],
-                "--script": ["-s", "s", "script", 2, False],
-                "script": ["-s", "s", "script", 2, False]
+                "-t": ["-t", "t", "time", 1],
+                "--time": ["-t", "t", "time", 1],
+                "time": ["-t", "t", "time", 1],
+                "-s": ["-s", "s", "script", 2],
+                "--script": ["-s", "s", "script", 2],
+                "script": ["-s", "s", "script", 2]
             }
         ]
 
@@ -62,7 +60,6 @@ class LdenParser:
                            }
                            ]
             self.do_command(0)
-            self.check_result(0)
         elif self.argv[1] == "notify":
             self.result = [1,
                            {
@@ -72,7 +69,6 @@ class LdenParser:
                            }
                            ]
             self.do_command(1)
-            self.check_result(1)
         else:
             print "lden: \'" + self.argv[1] + "\' is not a lden-command. See \'lden --help\'"
             exit()
@@ -103,8 +99,12 @@ class LdenParser:
                 or self.argv[2] == "-h":
             self.print_command_help(command)
         else:
+            if command == 1:
+                self.result[1]["expression"] = self.argv[2]
             for i in range(2, len(self.argv)):
-                if (i & 1) == 1:
+                if command == 0 and (i & 1) == 1:
+                    continue
+                if command == 1 and (i & 1) == 0:
                     continue
                 if self.argv[i] in self.command_options[command]:
                     self.get_value(command, i, self.command_options[command][self.argv[i]])
@@ -119,12 +119,15 @@ class LdenParser:
                     self.print_command_help(command)
 
     def print_command_help(self, command, option=None):
-        print "\n usage: lden " + self.commands[command] + " [<options>]\n"
+        print "\n usage: lden " + self.command_help[command]
         if option is None:
             for i in self.command_options_help[command]:
                 print i
         else:
             print self.command_options_help[command][option]
+
+        if command == 1:
+            print " See README.md to know how to query expression exactly\n"
         exit()
 
     def get_value(self, command, index, check_list):
@@ -137,10 +140,4 @@ class LdenParser:
             self.print_command_help(command, check_list[3])
         else:
             self.result[1][check_list[2]] = self.argv[index + 1]
-
-    def check_result(self, command):
-        for k, v in self.result[1].items():
-            if v is None and self.command_options[command][k] is True:
-                print "  Error: option \'" + k + "\' must be set"
-                self.print_command_help(command, k)
 
