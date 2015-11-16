@@ -12,7 +12,7 @@ class AllEvent:
         self.ES_URL = ""
 
         if ipaddress is None:
-            self.ES_URL += "192.168.225.1"
+            self.ES_URL += "localhost"
         else:
             self.ES_URL += ipaddress
 
