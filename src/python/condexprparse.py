@@ -21,9 +21,10 @@ class ConditionExpressionParser:
         self.expr_parser.add_function_token("size")
         self.expr_parser.add_function_token("speed")
 
-        manager = EventManager()
-        for k in manager.EVENT_LIST.keys():
+        self.manager = EventManager()
+        for k in self.manager.EVENT_LIST.keys():
             self.expr_parser.add_parameter_token(k)
+        self.expr_parser.add_parameter_token("custom")
 
     def parse(self, condexpr):
         self.result = self.cond_parser.parse_cond(condexpr)
@@ -37,9 +38,15 @@ class ConditionExpressionParser:
             recursive_list[0] = self.expr_parser.parse_expr(recursive_list[0])
 
             for i in range(1,3):
-                if len(recursive_list[0][i]) > 1\
-                    and recursive_list[0][i][0] not in self.event_list:
-                    self.event_list[recursive_list[0][i][0]] = None
+                if len(recursive_list[0][i]) > 2:
+                    print "Syntax error"
+                    exit()
+                if len(recursive_list[0][i]) > 1:
+                    if recursive_list[0][i][0] not in self.manager.EVENT_LIST and recursive_list[0][i][1] != "count":
+                        print "Custom function must be traced only to get count()"
+                        exit()
+                    if recursive_list[0][i][0] not in self.event_list:
+                        self.event_list[recursive_list[0][i][0]] = None
         else:
             self.recursive_split(recursive_list[1])
             self.recursive_split(recursive_list[2])
