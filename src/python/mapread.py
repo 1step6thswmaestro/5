@@ -17,8 +17,9 @@ class MapReader:
         i = 0
         for k, v in self.bpf_object[self.map_name].items():
             if i == 0:
-                map_data[0] = v.count
-                map_data[1] = v.size
+                self.map_data[0] = v.count
+                self.map_data[1] = v.size
+                i += 1
             else:
-                map_data[2] = v.count
+                self.map_data[2] = v.count
                 return self.map_data
