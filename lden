@@ -7,7 +7,7 @@ from src.python.ldenparse import LdenParser
 from src.python.condexprparse import ConditionExpressionParser
 from src.python.mapread import MapReader
 from bcc import BPF
-from time import sleep
+from time import sleep, time
 from sys import argv, maxint
 import os
 
@@ -53,6 +53,12 @@ def dfs_parse_tree(tree):
         else:
             return left != right
 
+def print_map():
+    print "%25s%15s%15s%15s" % ("ENAME", "COUNT", "SIZE", "SPEED")
+    print "  --------------------------------------------------------------------"
+    for k, v in task_dict.items():
+        print "%25s%15s%15s%15s" % (k, v[1]["count"], v[1]["size"], v[1]["speed"])
+    print ""
 
 if __name__ == "__main__":
     argv_parser = LdenParser(argv)
@@ -117,10 +123,11 @@ if __name__ == "__main__":
 
         print "# Tracing selected events..."
         print "# Condition : ", user_args["expression"]
-        print "# Timeout   : ", "infinity" if timeout is maxint else str(timeout) + " s"
+        print "# Timeout   : ", "infinity" if timeout is maxint else str(timeout) + " [sec]"
         print "# Script    : ", user_args["script"]
 
         try:
+            start_time = time()
             sleep_time = 0
             while True:
                 if (sleep_time >= timeout):
@@ -133,7 +140,9 @@ if __name__ == "__main__":
                     v[1] = v[0].read_map()
 
                 if dfs_parse_tree(event_parse_tree):
-                    print "EVENT!"
+                    duration = time() - start_time
+                    print "\n# The event happened :", duration, "[sec]\n"
+                    print_map()
                     if user_args["script"] is not None:
                         os.system(user_args["script"])
                     exit()
