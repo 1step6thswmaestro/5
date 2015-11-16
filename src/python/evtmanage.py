@@ -19,7 +19,7 @@ class EventManager:
             "memory.alloc": self.memory_alloc(),
             "memory.free": self.memory_free(),
             "memory.alloc_page": self.memory_alloc_page(),
-            # "memory.free_page": ["memory/memory_free_page.c", "__free_pages_ok", "memory_free_page_begin", "memory_free_page", "free_hot_cold_page", "memory_free_page_order_zero_begin"],
+            "memory.free_page": self.memory_free_page(),
             "memory.reclaim": self.memory_reclaim(),
             "memory.oom_kill": self.memory_oom_kill(),
             "fs.pagecache_access": self.fs_pagecache_access(),
@@ -114,10 +114,39 @@ class EventManager:
     def memory_free_page(self):
         return self.source\
                    .replace("HEADER", '#include <linux/pagevec.h>\n#include<asm/page.h>')\
-                   .replace("PARAMETER", ', struct page *page, unsinged int order')\
+                   .replace("PARAMETER", ', struct page *page, unsigned int order')\
                    .replace("SIZE", '(1 << (u64)order) * PAGE_SIZE')\
-                   .replace("CHECK", ""),\
-               "__free_pages_ok"
+                   .replace("CHECK", "")\
+                   .replace("0;\n}", """0;\n}
+int func2(struct pt_regs *ctx)
+{
+    struct value *val, *val_spd, val_temp;
+    int map_index = NUM_MAP_VAL_INDEX;
+    int map_spd_index = NUM_MAP_SPD_INDEX;
+    u64 tim = bpf_ktime_get_ns();
+    val_temp.count = 0;
+    val_temp.size = 0;
+
+    val_spd = map.lookup_or_init(&map_spd_index, &val_temp);
+    val = map.lookup_or_init(&map_index, &val_temp);
+    val->size += PAGE_SIZE;
+    ++(val->count);
+
+    if (val_spd->count == 0 || tim - (val_spd->size) > NUM_SEC)
+    {
+        val_spd->size = tim;
+        val_spd->count = 1;
+    }
+    else
+        val_spd->count += 1;
+
+    return 0;
+}
+"""),\
+                "__free_pages_ok",\
+                "func",\
+                "free_hot_cold_page",\
+                "func2"
 
     def memory_reclaim(self):
         return self.source\
