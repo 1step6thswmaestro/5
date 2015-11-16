@@ -8,6 +8,7 @@ class ConditionExpressionParser:
 
     def __init__(self):
         self.result = []
+        self.event_list = {}
         self.cond_parser = ConditionParser()
         self.expr_parser = ExpressionParser([">=", "<=", ">", "<", "=", "<>"])
 
@@ -27,13 +28,18 @@ class ConditionExpressionParser:
     def parse(self, condexpr):
         self.result = self.cond_parser.parse_cond(condexpr)
         self.recursive_split(self.result)
-        return self.result
+        return self.result, self.event_list
 
     def recursive_split(self, recursive_list):
         if len(recursive_list) == 1:
             while (type(recursive_list[0]) is str) is False:
                 recursive_list = recursive_list[0]
             recursive_list[0] = self.expr_parser.parse_expr(recursive_list[0])
+
+            for i in range(1,3):
+                if len(recursive_list[0][i]) > 1\
+                    and recursive_list[0][i][0] not in self.event_list:
+                    self.event_list[recursive_list[0][i][0]] = None
         else:
             self.recursive_split(recursive_list[1])
             self.recursive_split(recursive_list[2])

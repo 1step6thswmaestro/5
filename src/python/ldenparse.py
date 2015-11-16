@@ -135,7 +135,7 @@ class LdenParser:
             if self.argv[index] == check_list[0]:
                 chosen_option = "switch \'" + check_list[1] + "\'"
             else:
-                chosen_option = "option \'" + check_list[2] + + "\'"
+                chosen_option = "option \'" + check_list[2] + "\'"
             print "  Error: " + chosen_option + " requires a value"
             self.print_command_help(command, check_list[3])
         else:

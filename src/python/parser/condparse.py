@@ -19,7 +19,6 @@ class ConditionParser:
     """
 
     def __init__(self):
-        self.expr = ""
         self.ops = {}
 
         """
