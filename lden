@@ -12,7 +12,7 @@ from sys import argv, maxint
 import os
 
 ## DEFINE CONSTANT & DECLARE GLOBAL VARIABLE ##
-INTERVAL = 0.5
+INTERVAL = 0.1
 MAP = "map"
 task_dict = {}
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
@@ -85,7 +85,10 @@ if __name__ == "__main__":
 
         ## attach kprobe
         for k in chosen_event.keys():
-            code_and_func = manager.EVENT_LIST[k]
+            if k in manager.EVENT_LIST:
+                code_and_func = manager.EVENT_LIST[k]
+            else:
+                code_and_func = manager.user_custom(k)
             b = BPF(text=code_and_func[0])
 
             if len(code_and_func) > 2:

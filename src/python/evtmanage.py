@@ -35,6 +35,14 @@ class EventManager:
             "irq.hard" : self.irq_hard(),
         }
 
+    def user_custom(self, kfunc):
+        return self.source\
+                   .replace("HEADER", '')\
+                   .replace("PARAMETER", '')\
+                   .replace("SIZE", '0')\
+                   .replace("CHECK", ""),\
+               kfunc
+
     def read_file(self, path):
         with open(path, 'r') as f:
             return f.read()

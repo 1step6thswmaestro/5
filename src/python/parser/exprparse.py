@@ -94,7 +94,52 @@ class ExpressionParser:
                     expected_token_type = 7  # 함수 뒤에는 모든 토큰 타입이 전부 올 수 있다
                 else:
                     # 토큰이 파라미터나 상수일 경우
-                    brace_cnt = len(call_stack)
+
+                    if current_token == "custom":
+                        brace_cnt = 1
+                        while brace_cnt != 0:
+                            if last_idx == len(side_expr[side_expr_idx]):
+                                print "Token expected; Expression ends unexpectedly"
+                                exit()
+
+                            if side_expr[side_expr_idx][last_idx] != " " and side_expr[side_expr_idx][last_idx] != "(":
+                                print "Expected \'(\'"
+                                exit()
+
+                            if side_expr[side_expr_idx][last_idx] == "(":
+                                brace_cnt -= 1
+
+                            last_idx += 1
+
+                        side_expr[side_expr_idx] = side_expr[side_expr_idx].replace(side_expr[side_expr_idx][last_idx:],
+                                                                                side_expr[side_expr_idx][last_idx:].lstrip())
+                        first_idx = last_idx
+                        while True:
+                            if last_idx == len(side_expr[side_expr_idx]):
+                                print "Token expected; Expression ends unexpectedly"
+                                exit()
+                            if side_expr[side_expr_idx][last_idx] == " ":
+                                side_expr[side_expr_idx] = side_expr[side_expr_idx].replace(side_expr[side_expr_idx][last_idx:],
+                                                                                side_expr[side_expr_idx][last_idx:].lstrip())
+                                if last_idx == len(side_expr[side_expr_idx]):
+                                    print "Token expected; Expression ends unexpectedly"
+                                    exit()
+                                elif side_expr[side_expr_idx][last_idx] != ")":
+                                    print "Expected \')\'"
+                                    exit()
+                                call_stack.insert(0, side_expr[side_expr_idx][first_idx:last_idx])
+                                break
+
+                            elif side_expr[side_expr_idx][last_idx] != ")":
+                                last_idx += 1
+                            else:
+                                call_stack.insert(0, side_expr[side_expr_idx][first_idx:last_idx])
+                                break
+                        last_idx += 1
+                    else:
+                        call_stack.insert(0, current_token)
+
+                    brace_cnt = len(call_stack) - 1
                     while brace_cnt != 0:
                         if last_idx == len(side_expr[side_expr_idx]):
                             print "Token expected; Expression ends unexpectedly"
@@ -109,10 +154,8 @@ class ExpressionParser:
 
                         last_idx += 1
 
-                    call_stack.insert(0, current_token)
                     side_expr[side_expr_idx] = side_expr[side_expr_idx].replace(side_expr[side_expr_idx][last_idx:],
-                                                                                side_expr[side_expr_idx][
-                                                                                last_idx:].lstrip())
+                                                                                side_expr[side_expr_idx][last_idx:].lstrip())
                     first_idx = last_idx
                     expected_token_type = 0  # 파라미터나 상수는 콜스택의 top에 있어야만 한다
 
