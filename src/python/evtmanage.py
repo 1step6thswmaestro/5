@@ -32,8 +32,23 @@ class EventManager:
             "network.udp_recv": self.network_udp_recv(),
             "disk.read": self.disk_read(),
             "disk.write": self.disk_write(),
-            "irq.hard" : self.irq_hard(),
+            "irq.hard" : self.irq_hard()
         }
+
+        self.SIZE_EVENT = {
+                "memory.alloc": None,
+                "memory.alloc_page": None,
+                "memory.free_page": None,
+                "memory.reclain": None,
+                "fs.read_ahead": None,
+                "fs.page_writeback_per_inode": None,
+                "network.tcp_send": None,
+                "network.tcp_recv": None,
+                "network.udp_send": None,
+                "network.udp_recv": None,
+                "disk.read": None,
+                "disk.write": None
+                }
 
     def user_custom(self, kfunc):
         return self.source\

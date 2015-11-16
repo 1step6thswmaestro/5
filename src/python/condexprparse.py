@@ -42,8 +42,8 @@ class ConditionExpressionParser:
                     print "Syntax error"
                     exit()
                 if len(recursive_list[0][i]) > 1:
-                    if recursive_list[0][i][0] not in self.manager.EVENT_LIST and recursive_list[0][i][1] != "count":
-                        print "Custom function must be traced only to get count()"
+                    if recursive_list[0][i][0] not in self.manager.SIZE_EVENT and recursive_list[0][i][1] == "size":
+                        print "Event \'" + recursive_list[0][i][0] + "\' cannot get size data."
                         exit()
                     if recursive_list[0][i][0] not in self.event_list:
                         self.event_list[recursive_list[0][i][0]] = None

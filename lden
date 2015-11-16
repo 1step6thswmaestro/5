@@ -15,6 +15,7 @@ import os
 INTERVAL = 0.1
 MAP = "map"
 task_dict = {}
+manager = EventManager()
 ## ## ## ## ## ## ## ## ## ## ## ## ## ## ## ##
 
 def dfs_parse_tree(tree):
@@ -57,7 +58,7 @@ def print_map():
     print "%25s%15s%15s%15s" % ("ENAME", "COUNT", "SIZE", "SPEED")
     print "  --------------------------------------------------------------------"
     for k, v in task_dict.items():
-        print "%25s%15s%15s%15s" % (k, v[1]["count"], v[1]["size"], v[1]["speed"])
+        print "%25s%15s%15s%15s" % (k, v[1]["count"], v[1]["size"] if k in manager.SIZE_EVENT else "X", v[1]["speed"])
     print ""
 
 if __name__ == "__main__":
@@ -82,8 +83,6 @@ if __name__ == "__main__":
     ##############################
     # "notify" command executed
     else:
-        manager = EventManager()
-
         ## parsing expression
         condexpr_parser = ConditionExpressionParser()
         (event_parse_tree, chosen_event) = condexpr_parser.parse(user_args["expression"])
