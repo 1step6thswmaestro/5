@@ -1,13 +1,16 @@
 CXX=gcc
 
-all: oom bigfile
-	echo 'compile'
+TARGET := oom bigfile
+OBJECTS := oom.o bigfile.o
 
-oom:
-	$(CXX) -o oom oom.c
+all: $(TARGET)
+
+oom : 
+	$(CXX) -o $@ $@.c
 
 bigfile:
-	$(CXX) -o pagecache_miss bigfile.c
+	$(CXX) -o pagecache_miss $@.c
+
 
 clean:
 	rm -f oom pagecache_miss
