@@ -2,7 +2,7 @@
 # coding=utf-8
 
 from src.python.evtmanage import EventManager
-from src.python.all_event import AllEvent
+from src.python.visualize import EventVisualizer
 from src.python.ldenparse import LdenParser
 from src.python.condexprparse import ConditionExpressionParser
 from src.python.mapread import MapReader
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     ##############################
     # "all" command executed
     if commander == 0:
-        visualizer = AllEvent(ipaddress=user_args["address"], port=user_args["port"])
+        visualizer = EventVisualizer(ipaddress=user_args["address"], port=user_args["port"])
         try:
             visualizer.main_run()
         except KeyboardInterrupt:

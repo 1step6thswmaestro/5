@@ -7,7 +7,7 @@ from multiprocessing import Process
 from evtmanage import EventManager
 
 
-class AllEvent:
+class EventVisualizer:
     def __init__(self, ipaddress, port):
         self.ES_URL = ""
 
@@ -105,6 +105,8 @@ class AllEvent:
         current_time = time.time()
         sleep_time = int(current_time)+1 - current_time
 
+        print "\n# Data being visualized on port 5601... Hit Ctrl-C to end."
+
         while 1:
             self.bulk = ''
             time.sleep(sleep_time)
@@ -124,5 +126,5 @@ class AllEvent:
 
 
 if __name__ == "__main__":
-    a = AllEvent()
+    a = EventVisualizer()
     a.main_run()
