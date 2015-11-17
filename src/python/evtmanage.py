@@ -39,7 +39,7 @@ class EventManager:
                 "memory.alloc": None,
                 "memory.alloc_page": None,
                 "memory.free_page": None,
-                "memory.reclain": None,
+                "memory.reclaim": None,
                 "fs.read_ahead": None,
                 "fs.page_writeback_per_inode": None,
                 "network.tcp_send": None,
