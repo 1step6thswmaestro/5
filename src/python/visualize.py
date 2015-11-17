@@ -105,6 +105,8 @@ class EventVisualizer:
         current_time = time.time()
         sleep_time = int(current_time)+1 - current_time
 
+        print "\n# Data being visualized on port 5601... Hit Ctrl-C to end."
+
         while 1:
             self.bulk = ''
             time.sleep(sleep_time)
