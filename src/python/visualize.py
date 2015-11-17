@@ -7,7 +7,7 @@ from multiprocessing import Process
 from evtmanage import EventManager
 
 
-class AllEvent:
+class EventVisualizer:
     def __init__(self, ipaddress, port):
         self.ES_URL = ""
 
@@ -124,5 +124,5 @@ class AllEvent:
 
 
 if __name__ == "__main__":
-    a = AllEvent()
+    a = EventVisualizer()
     a.main_run()
