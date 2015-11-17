@@ -1,5 +1,5 @@
 # coding=utf-8
-
+import os
 
 class EventManager:
     """
@@ -8,7 +8,7 @@ class EventManager:
     """
 
     def __init__(self):
-        self.source = self.read_file("./src/c/general.c")
+        self.source = self.read_file(os.path.dirname(__file__)+"/../c/general.c")
         self.EVENT_LIST = {
             "sys.open": self.sys_open(),
             "sys.kill": self.sys_kill(),
