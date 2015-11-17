@@ -10,15 +10,15 @@ class LdenParser:
     def __init__(self, argv_list):
         self.argv = argv_list
         self.result = []
-        self.commands = ["all", "notify"]
+        self.commands = ["visualize", "notify"]
         self.command_help = [
-                "all [<options>]\n",
+                "visualize [<options>]\n",
                 "notify <expression> [<options>]\n"
         ]
         self.command_options_help = [
             [
                 """    -a, --address <ip address>  set server ip address to show data
-                                (default: 192.168.225.1)\n""",
+                                (default: localhost)\n""",
                 """    -p, --port <port number>    set port
                                 (default: 9200)\n"""
             ],
@@ -52,7 +52,7 @@ class LdenParser:
                 or self.argv[1] == "--help" \
                 or self.argv[1] == "-h":
             self.print_help()
-        elif self.argv[1] == "all":
+        elif self.argv[1] == "visualize":
             self.result = [0,
                            {
                                "address": None,
@@ -79,9 +79,9 @@ class LdenParser:
  (This program must be executed with "permission of superuser")
 
  The most commonly used lden commands are:
-   all      Trace all events and visualize their data on Kibana
-   notify   Trace events user selected according to condition expression,
-            notify when condition is set and execute script user defined
+   visualize    Trace all events and visualize their data on Kibana
+   notify       Trace events user selected according to condition expression,
+                notify when condition is set and execute script user defined
 
  See 'lden COMMAND --help' for more information on a specific command.
 """
