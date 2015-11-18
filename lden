@@ -147,7 +147,9 @@ if __name__ == "__main__":
                     exit()
 
         except KeyboardInterrupt:
-            print ""
+            duration = time() - start_time
+            print "\n# Traing process ended before the event happens :", duration, "[sec]\n"
+            print_map()
             exit()
         ## ## ## ## ## ## ##
 
