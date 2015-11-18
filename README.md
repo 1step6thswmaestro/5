@@ -1,4 +1,9 @@
 # LDEN (Linux Dynamic Event Notifier)
+##Original repository
+[https://github.com/SomaLDEN/lden](https://github.com/SomaLDEN/lden)
+
+##INSTALL & RUN
+To execute 'LDEN', please read INSTALL.md and implement those instructions.
 
 ## Provided data
 
@@ -84,3 +89,4 @@ and also same as
 
 - Option **'time'** requires the number of time. You want to turn off this program after that time spends. The default set is "infinity" mode.
 - Option **'script'** requires shell script that would be executed when the expressed event happens. It's recommended to use it like `--script "bash yourscript.sh"`
+
