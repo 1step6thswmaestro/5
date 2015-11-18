@@ -1,16 +1,9 @@
-CXX=gcc
-
-TARGET := oom bigfile
-OBJECTS := oom.o bigfile.o
+TARGET := oom pagecache_miss
 
 all: $(TARGET)
 
-oom : 
-	$(CXX) -o $@ $@.c
-
-bigfile:
-	$(CXX) -o pagecache_miss $@.c
-
+$(TARGET): % : ./src/%.c
+	$(CC) -o $@ $^
 
 clean:
-	rm -f oom pagecache_miss
+	rm -f $(TARGET)

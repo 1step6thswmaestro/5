@@ -1,0 +1,49 @@
+#!/usr/bin/python
+
+import sys
+import os
+
+if __name__ == "__main__":
+    if "-h" in sys.argv or len(sys.argv) == 1:
+        print "command description"
+        print "if you want to use lden "
+        print """
+        $ ./demo lden <event> <action>
+        events : diskio, etc...
+        action : run/show (run script or code / show the script or code)
+
+        """
+        print "if you make situation use like that"
+        print """
+        $ ./demo <event> <action>
+        events : diskio, oom, pagecache_miss
+        action : run/show (run script or code / show the script or code)
+        """
+        exit()
+
+    if sys.argv[1] == "lden":
+        if sys.argv[2] == "diskio":
+            if "run" in sys.argv:
+                os.system("./command/diskio.sh")
+            if "show" in sys.argv:
+                os.system("vim ./command/diskio.sh")
+        exit()
+
+    if sys.argv[1] == "diskio":
+        if "run" in sys.argv:
+            os.system("./diskio_test.sh")
+        if "show" in sys.argv:
+            os.system("vim ./script/diskio_test.sh")
+            
+    elif sys.argv[1] == "oom":
+        if "run" in sys.argv:
+            os.system("./oom")
+        if "show" in sys.argv:
+            os.system("vim ./src/oom.c")
+
+    elif sys.argv[1] == "pagecache_miss":
+        if "run" in sys.argv:
+            os.system(".pagecache_miss")
+        if "show" in sys.argv:
+            os.system("vim /src/pagecache_miss")
+
